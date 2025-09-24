@@ -180,7 +180,7 @@ const formulajs = require('@formulajs/formulajs');
                 func = new Function([...arg].join(','),'return ' + expression);
                 this.funcCache.set(expression, func);
             }
-            let result = func.apply(null, variables.values());
+            let result = func.apply(null, [...variables.values()]);
 
             if (result === null) {
                 result = 0

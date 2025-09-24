@@ -192,7 +192,7 @@ const formulajs = __webpack_require__(633);
                 func = new Function([...arg].join(','),'return ' + expression);
                 this.funcCache.set(expression, func);
             }
-            let result = func.apply(null, variables.values());
+            let result = func.apply(null, [...variables.values()]);
 
             if (result === null) {
                 result = 0
