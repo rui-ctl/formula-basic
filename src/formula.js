@@ -156,99 +156,32 @@ const formulajs = require('@formulajs/formulajs');
         }
 
         const F = function (expression, variables, i, j, obj) {
-            // Global helpers
-            instance = obj
-            x = i
-            y = j
-            // String
-            let s = ''
-            let parent = {}
-            if (variables) {
-                if (variables.size) {
-                    let tokens = null
-                    let t;
-                    variables.forEach(function (v, k) {
-                        // Replace ! per dot
-                        t = k.replace(/!/g, '.')
-                        // Exists parent
-                        if (t.indexOf('.') !== -1) {
-                            t = t.split('.')
-                            parent[t[0]] = true
-                        }
-                    })
-                    t = Object.keys(parent)
-                    for (let i = 0; i < t.length; i++) {
-                        s += 'var ' + t[i] + ' = {};'
-                    }
-
-                    variables.forEach(function (v, k) {
-                        // Replace ! per dot
-                        t = k.replace(/!/g, '.')
-                        if (v !== null && !isNumeric(v)) {
-                            tokens = v.match(/(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g)
-                            if (tokens && tokens.length) {
-                                v = updateRanges(tokens, v)
-                            }
-                        }
-
-                        if (t.indexOf('.') > 0) {
-                            s += t + ' = ' + variables.get(k) + ';\n'
-                        } else {
-                            s += 'var ' + t + ' = ' + v + ';\n'
-                        }
-                    })
-                } else {
-                    let keys = Object.keys(variables)
-                    if (keys.length) {
-                        let parent = {};
-                        let t;
-                        for (let i = 0; i < keys.length; i++) {
-                            // Replace ! per dot
-                            t = keys[i].replace(/\!/g, '.')
-                            // Exists parent
-                            if (t.indexOf('.') > 0) {
-                                let t = t.split('.')
-                                parent[t[0]] = {}
-                            }
-                        }
-                        t = Object.keys(parent)
-                        for (let i = 0; i < t.length; i++) {
-                            s += 'var ' + t[i] + ' = {};'
-                        }
-
-                        for (let i = 0; i < keys.length; i++) {
-                            // Replace ! per dot
-                            t = keys[i].replace(/!/g, '.')
-                            // Update range
-                            if (variables[keys[i]] !== null && !isNumeric(variables[keys[i]])) {
-                                let tokens = variables[keys[i]].match(/(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g);
-                                if (tokens && tokens.length) {
-                                    variables[keys[i]] = tokensUpdate(tokens, variables[keys[i]])
-                                }
-                            }
-
-                            if (t.indexOf('.') > 0) {
-                                s += t + " = " + variables[keys[i]] + ";\n"
-                            } else {
-                                s += "var " + t + " = " + variables[keys[i]] + ";\n"
-                            }
-                        }
-                    }
-                }
+            let func,arg = new Set();
+            if (!('funcCache' in this)) {
+                this.funcCache = new Map();
             }
-            // Remove $
-            expression = expression.replace(/\$/g, '')
-            // Replace ! per dot
-            expression = expression.replace(/!/g, '.')
-            // Adapt to JS
-            expression = secureFormula(expression, true)
-            // Update range
-            let tokens = expression.match(/(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g)
-            if (tokens && tokens.length) {
-                expression = tokensUpdate(tokens, expression)
+
+            // tokenize and replace cell references with parameters
+            const tokensPosition = variables.keys().reduce((obj, key, index) => obj.set(key, index), new Map());
+
+            expression = expression.replace(/([A-Z]+[0-9]+)/g, (match, p1) => {
+                const col = tokensPosition.get(p1);
+                const p = col !== undefined ? '$' + col : match;
+                arg.add(p);
+                return p;
+            });
+
+            // caching
+            if (this.funcCache.has(expression)) {
+                // console.log('cache hit');
+                func = this.funcCache.get(expression);
+            } else {
+                //console.log('compile ', expression);
+                func = new Function([...arg].join(','),'return ' + expression);
+                this.funcCache.set(expression, func);
             }
-            // Calculate
-            let result = new Function(s + "; return " + expression)()
+            let result = func.apply(null, variables.values());
+
             if (result === null) {
                 result = 0
             }
