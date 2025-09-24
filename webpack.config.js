@@ -35,11 +35,11 @@ module.exports = {
     entry: './src/formula.js',
     mode: 'production',
     output: {
-        filename: 'formula.js',
+        filename: 'index.js',
         library: 'Formula'
     },
     optimization: {
-        minimize: true
+        minimize: false
     },
     devServer: {
         static : {

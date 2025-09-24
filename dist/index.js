@@ -1,268 +1,394 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["formula-basic"] = factory();
-	else
-		root["formula-basic"] = factory();
-})(this, function() {
-return /******/ (function() { // webpackBootstrap
+;(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    global.formula = factory();
+}(this, (function () {
+
+var Formula;
+/******/ (function() { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 765:
-/***/ (function(__unused_webpack_module, exports) {
+/***/ 66:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-/* bessel.js (C) 2013-present SheetJS -- http://sheetjs.com */
-/* vim: set ts=2: */
-/*exported BESSEL */
-var BESSEL;
-(function (factory) {
-  /*jshint ignore:start */
-  if(typeof DO_NOT_EXPORT_BESSEL === 'undefined') {
-    if(true) {
-      factory(exports);
-    } else {}
-  } else {
-    factory(BESSEL = {});
-  }
-  /*jshint ignore:end */
-}(function(BESSEL) {
-BESSEL.version = '1.0.2';
-var M = Math;
+/**
+ * Jspreadsheet Extensions
+ * Extension: Formula Basic
+ * License: This is a free software MIT
+ *
+ * https://jspreadsheet.com
+ */
 
-function _horner(arr, v) { for(var i = 0, z = 0; i < arr.length; ++i) z = v * z + arr[i]; return z; }
-function _bessel_iter(x, n, f0, f1, sign) {
-  if(n === 0) return f0;
-  if(n === 1) return f1;
-  var tdx = 2 / x, f2 = f1;
-  for(var o = 1; o < n; ++o) {
-    f2 = f1 * o * tdx + sign * f0;
-    f0 = f1; f1 = f2;
-  }
-  return f2;
-}
-function _bessel_wrap(bessel0, bessel1, name, nonzero, sign) {
-  return function bessel(x,n) {
-    if(nonzero) {
-      if(x === 0) return (nonzero == 1 ? -Infinity : Infinity);
-      else if(x < 0) return NaN;
-    }
-    if(n === 0) return bessel0(x);
-    if(n === 1) return bessel1(x);
-    if(n < 0) return NaN;
-    n|=0;
-    var b0 = bessel0(x), b1 = bessel1(x);
-    return _bessel_iter(x, n, b0, b1, sign);
-  };
-}
-var besselj = (function() {
-  var W = 0.636619772; // 2 / Math.PI
+const formulajs = __webpack_require__(633);
 
-  var b0_a1a = [57568490574.0, -13362590354.0, 651619640.7, -11214424.18, 77392.33017, -184.9052456].reverse();
-  var b0_a2a = [57568490411.0, 1029532985.0, 9494680.718, 59272.64853, 267.8532712, 1.0].reverse();
-  var b0_a1b = [1.0, -0.1098628627e-2, 0.2734510407e-4, -0.2073370639e-5, 0.2093887211e-6].reverse();
-  var b0_a2b = [-0.1562499995e-1, 0.1430488765e-3, -0.6911147651e-5, 0.7621095161e-6, -0.934935152e-7].reverse();
+;(function (global, factory) {
+     true ? module.exports = factory() :
+    0;
+}(this, (function () {
 
-  function bessel0(x) {
-    var a=0, a1=0, a2=0, y = x * x;
-    if(x < 8) {
-      a1 = _horner(b0_a1a, y);
-      a2 = _horner(b0_a2a, y);
-      a = a1 / a2;
-    } else {
-      var xx = x - 0.785398164;
-      y = 64 / y;
-      a1 = _horner(b0_a1b, y);
-      a2 = _horner(b0_a2b, y);
-      a = M.sqrt(W/x)*(M.cos(xx)*a1-M.sin(xx)*a2*8/x);
-    }
-    return a;
-  }
+    const Formula = function (scope) {
+        function getValue(obj, path) {
+            const keys = path.split('.')
+            let current = obj
 
-  var b1_a1a = [72362614232.0, -7895059235.0, 242396853.1, -2972611.439, 15704.48260, -30.16036606].reverse();
-  var b1_a2a = [144725228442.0, 2300535178.0, 18583304.74, 99447.43394, 376.9991397, 1.0].reverse();
-  var b1_a1b = [1.0, 0.183105e-2, -0.3516396496e-4, 0.2457520174e-5, -0.240337019e-6].reverse();
-  var b1_a2b = [0.04687499995, -0.2002690873e-3, 0.8449199096e-5, -0.88228987e-6, 0.105787412e-6].reverse();
+            for (const key of keys) {
+                if (current === undefined || current === null) {
+                    return undefined
+                }
+                current = current[key]
+            }
 
-  function bessel1(x) {
-    var a=0, a1=0, a2=0, y = x*x, xx = M.abs(x) - 2.356194491;
-    if(Math.abs(x)< 8) {
-      a1 = x*_horner(b1_a1a, y);
-      a2 = _horner(b1_a2a, y);
-      a = a1 / a2;
-    } else {
-      y = 64 / y;
-      a1=_horner(b1_a1b, y);
-      a2=_horner(b1_a2b, y);
-      a=M.sqrt(W/M.abs(x))*(M.cos(xx)*a1-M.sin(xx)*a2*8/M.abs(x));
-      if(x < 0) a = -a;
-    }
-    return a;
-  }
-
-  return function besselj(x, n) {
-    n = Math.round(n);
-    if(!isFinite(x)) return isNaN(x) ? x : 0;
-    if(n < 0) return ((n%2)?-1:1)*besselj(x, -n);
-    if(x < 0) return ((n%2)?-1:1)*besselj(-x, n);
-    if(n === 0) return bessel0(x);
-    if(n === 1) return bessel1(x);
-    if(x === 0) return 0;
-
-    var ret=0.0;
-    if(x > n) {
-      ret = _bessel_iter(x, n, bessel0(x), bessel1(x),-1);
-    } else {
-      var m=2*M.floor((n+M.floor(M.sqrt(40*n)))/2);
-      var jsum=false;
-      var bjp=0.0, sum=0.0;
-      var bj=1.0, bjm = 0.0;
-      var tox = 2 / x;
-      for (var j=m;j>0;j--) {
-        bjm=j*tox*bj-bjp;
-        bjp=bj;
-        bj=bjm;
-        if (M.abs(bj) > 1E10) {
-          bj *= 1E-10;
-          bjp *= 1E-10;
-          ret *= 1E-10;
-          sum *= 1E-10;
+            return current
         }
-        if (jsum) sum += bj;
-        jsum=!jsum;
-        if (j == n) ret=bjp;
-      }
-      sum=2.0*sum-bj;
-      ret /= sum;
+
+        for (let i = 0; i < Object.keys(formulajs).length; i++) {
+            let method = Object.keys(formulajs)[i]
+            let keys = []
+            let values
+            if (typeof formulajs[method] == 'object') {
+                keys = Object.keys(formulajs[method])
+                values = Object.values(formulajs[method])
+                for (let a = 0; a < values.length; a++) {
+                    if (typeof values[a] == 'object') {
+                        let subMethod = keys[a]
+                        if (formulajs[method][subMethod]) {
+                            keys = [
+                                ...keys,
+                                ...Object.keys(formulajs[method][subMethod]).map((a) => subMethod + '.' + a)
+                            ] // Line too heavy, need refactor
+                            keys.splice(keys.indexOf(subMethod), 1)
+                        }
+                    }
+                }
+            }
+
+            if (keys.length < 1) {
+                scope[method] = formulajs[method]
+            } else {
+                for (let j = 0; j < keys.length; j++) {
+                    if (typeof getValue(formulajs[method], keys[j]) == 'function') {
+                        scope[method] = getValue(formulajs[method], keys[j])
+                    }
+                }
+            }
+        }
+
+        let parseNumber = function (number) {
+            if (typeof (number) === 'number') {
+                number = parseInt(number);
+            }
+            return number;
+        }
+
+        /**
+         * Instance execution helpers
+         */
+        let x = null
+        let y = null
+        let instance = null
+
+        scope['TABLE'] = function () {
+            return instance
+        }
+        scope['COLUMN'] = scope['COL'] = function () {
+            if (instance.tracking) {
+                instance.tracking.push(F.getColumnNameFromCoords(parseNumber(x), parseNumber(y)))
+            }
+
+            return parseNumber(x) + 1
+        }
+        scope['ROW'] = function () {
+            if (instance.tracking) {
+                instance.tracking.push(F.getColumnNameFromCoords(parseNumber(x), parseNumber(y)))
+            }
+
+            return parseNumber(y) + 1
+        }
+        scope['CELL'] = function () {
+            return F.getColumnNameFromCoords(x, y)
+        }
+        scope['VALUE'] = function (col, row, processed) {
+            return instance.getValueFromCoords(parseNumber(col) - 1, parseNumber(row) - 1, processed)
+        }
+        scope['THISROWCELL'] = function (col) {
+            return instance.getValueFromCoords(parseNumber(col) - 1, parseNumber(y))
+        }
+
+        // Secure formula
+        const secureFormula = function (oldValue, runtime) {
+            let newValue = '';
+            let inside = 0;
+            let special = ['=', '!', '>', '<'];
+
+            for (let i = 0; i < oldValue.length; i++) {
+                if (oldValue[i] === '"') {
+                    if (inside === 0) {
+                        inside = 1
+                    } else {
+                        inside = 0
+                    }
+                }
+
+                if (inside === 1) {
+                    newValue += oldValue[i]
+                } else {
+                    newValue += oldValue[i].toUpperCase()
+
+                    if (runtime === true) {
+                        if (i > 0 && oldValue[i] === '=' && special.indexOf(oldValue[i - 1]) === -1 && special.indexOf(oldValue[i + 1]) === -1) {
+                            newValue += '='
+                        }
+                    }
+                }
+            }
+
+            // Adapt to JS
+            newValue = newValue.replace(/\^/g, '**')
+            newValue = newValue.replace(/<>/g, '!=')
+            newValue = newValue.replace(/&/g, '+')
+            newValue = newValue.replace(/\$/g, '')
+
+            return newValue
+        }
+
+        // Convert range tokens
+        const tokensUpdate = function (tokens, e) {
+            for (let index = 0; index < tokens.length; index++) {
+                let f = F.getTokensFromRange(tokens[index])
+                e = e.replace(tokens[index], '[' + f.join(',') + ']')
+            }
+            return e
+        }
+
+        const isNumeric = function (num) {
+            if (typeof (num) === 'string') {
+                num = num.trim();
+            }
+            return !isNaN(num) && num !== null && num !== '';
+        }
+
+        const F = function (expression, variables, i, j, obj) {
+            let func,arg = new Set();
+            if (!('funcCache' in this)) {
+                this.funcCache = new Map();
+            }
+
+            // tokenize and replace cell references with parameters
+            const tokensPosition = variables.keys().reduce((obj, key, index) => obj.set(key, index), new Map());
+
+            expression = expression.replace(/([A-Z]+[0-9]+)/g, (match, p1) => {
+                const col = tokensPosition.get(p1);
+                const p = col !== undefined ? '$' + col : match;
+                arg.add(p);
+                return p;
+            });
+
+            // caching
+            if (this.funcCache.has(expression)) {
+                // console.log('cache hit');
+                func = this.funcCache.get(expression);
+            } else {
+                //console.log('compile ', expression);
+                func = new Function([...arg].join(','),'return ' + expression);
+                this.funcCache.set(expression, func);
+            }
+            let result = func.apply(null, variables.values());
+
+            if (result === null) {
+                result = 0
+            }
+
+            return result
+        }
+
+        /**
+         * Get letter based on a number
+         * @param {number} i
+         * @return {string}
+         */
+        var getColumnName = function(i) {
+            var letter = '';
+            if (i > 701) {
+                letter += String.fromCharCode(64 + parseInt(i / 676));
+                letter += String.fromCharCode(64 + parseInt((i % 676) / 26));
+            } else if (i > 25) {
+                letter += String.fromCharCode(64 + parseInt(i / 26));
+            }
+            letter += String.fromCharCode(65 + (i % 26));
+
+            return letter;
+        }
+
+        /**
+         * Get column name from coords
+         */
+        F.getColumnNameFromCoords = function(x, y) {
+            return getColumnName(parseInt(x)) + (parseInt(y) + 1);
+        }
+
+        F.getCoordsFromColumnName = function(columnName) {
+            // Get the letters
+            var t = /^[a-zA-Z]+/.exec(columnName);
+
+            if (t) {
+                // Base 26 calculation
+                var code = 0;
+                for (var i = 0; i < t[0].length; i++) {
+                    code += parseInt(t[0].charCodeAt(i) - 64) * Math.pow(26, (t[0].length - 1 - i));
+                }
+                code--;
+                // Make sure jspreadsheet starts on zero
+                if (code < 0) {
+                    code = 0;
+                }
+
+                // Number
+                var number = parseInt(/[0-9]+$/.exec(columnName)) || null;
+                if (number > 0) {
+                    number--;
+                }
+
+                return [ code, number ];
+            }
+        }
+
+        F.getRangeFromTokens = function(tokens) {
+            tokens = tokens.filter(function(v) {
+                return v != '#REF!';
+            });
+
+            var d = '';
+            var t = '';
+            for (var i = 0; i < tokens.length; i++) {
+                if (tokens[i].indexOf('.') >= 0) {
+                    d = '.';
+                } else if (tokens[i].indexOf('!') >= 0) {
+                    d = '!';
+                }
+                if (d) {
+                    t = tokens[i].split(d);
+                    tokens[i] = t[1];
+                    t = t[0] + d
+                }
+            }
+
+            tokens.sort(function(a, b) {
+                var t1 = Helpers.getCoordsFromColumnName(a);
+                var t2 = Helpers.getCoordsFromColumnName(b);
+                if (t1[1] > t2[1]) {
+                    return 1;
+                } else if (t1[1] < t2[1]) {
+                    return -1;
+                } else {
+                    if (t1[0] > t2[0]) {
+                        return 1;
+                    } else if (t1[0] < t2[0]) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+
+            if (! tokens.length) {
+                return '#REF!';
+            } else {
+                return t+(tokens[0] + ':' + tokens[tokens.length - 1]);
+            }
+        }
+
+        F.getTokensFromRange = function(range) {
+            if (range.indexOf('.') > 0) {
+                var t = range.split('.');
+                range = t[1];
+                t = t[0] + '.';
+            } else if (range.indexOf('!') > 0) {
+                var t = range.split('!');
+                range = t[1];
+                t = t[0] + '!';
+            } else {
+                var t = '';
+            }
+
+            var range = range.split(':');
+            var e1 = F.getCoordsFromColumnName(range[0]);
+            var e2 = F.getCoordsFromColumnName(range[1]);
+
+            if (e1[0] <= e2[0]) {
+                var x1 = e1[0];
+                var x2 = e2[0];
+            } else {
+                var x1 = e2[0];
+                var x2 = e1[0];
+            }
+
+            if (e1[1] === null && e2[1] == null) {
+                var y1 = null;
+                var y2 = null;
+
+                var k = Object.keys(vars);
+                for (var i = 0; i < k.length; i++) {
+                    var tmp = F.getCoordsFromColumnName(k[i]);
+                    if (tmp[0] === e1[0]) {
+                        if (y1 === null || tmp[1] < y1) {
+                            y1 = tmp[1]
+                        }
+                    }
+                    if (tmp[0] === e2[0]) {
+                        if (y2 === null || tmp[1] > y2) {
+                            y2 = tmp[1]
+                        }
+                    }
+                }
+            } else {
+                if (e1[1] <= e2[1]) {
+                    var y1 = e1[1];
+                    var y2 = e2[1];
+                } else {
+                    var y1 = e2[1];
+                    var y2 = e1[1];
+                }
+            }
+
+            var f = [];
+            for (var j = y1; j <= y2; j++) {
+                var line = [];
+                for (var i = x1; i <= x2; i++) {
+                    line.push(t + F.getColumnNameFromCoords(i, j));
+                }
+                f.push(line);
+            }
+
+            return f;
+        }
+
+        F.setFormula = function (o) {
+            let k = Object.keys(o)
+            for (let i = 0; i < k.length; i++) {
+                if (typeof o[k[i]] == 'function') {
+                    scope[k[i]] = o[k[i]]
+                }
+            }
+        }
+
+        F.basic = true
+
+        return F
     }
-    return ret;
-  };
-})();
-var bessely = (function() {
-  var W = 0.636619772;
 
-  var b0_a1a = [-2957821389.0, 7062834065.0, -512359803.6, 10879881.29, -86327.92757, 228.4622733].reverse();
-  var b0_a2a = [40076544269.0, 745249964.8, 7189466.438, 47447.26470, 226.1030244, 1.0].reverse();
-  var b0_a1b = [1.0, -0.1098628627e-2, 0.2734510407e-4, -0.2073370639e-5, 0.2093887211e-6].reverse();
-  var b0_a2b = [-0.1562499995e-1, 0.1430488765e-3, -0.6911147651e-5, 0.7621095161e-6, -0.934945152e-7].reverse();
-
-  function bessel0(x) {
-    var a=0, a1=0, a2=0, y = x * x, xx = x - 0.785398164;
-    if(x < 8) {
-      a1 = _horner(b0_a1a, y);
-      a2 = _horner(b0_a2a, y);
-      a = a1/a2 + W * besselj(x,0) * M.log(x);
-    } else {
-      y = 64 / y;
-      a1 = _horner(b0_a1b, y);
-      a2 = _horner(b0_a2b, y);
-      a = M.sqrt(W/x)*(M.sin(xx)*a1+M.cos(xx)*a2*8/x);
-    }
-    return a;
-  }
-
-  var b1_a1a = [-0.4900604943e13, 0.1275274390e13, -0.5153438139e11, 0.7349264551e9, -0.4237922726e7, 0.8511937935e4].reverse();
-  var b1_a2a = [0.2499580570e14, 0.4244419664e12, 0.3733650367e10, 0.2245904002e8, 0.1020426050e6, 0.3549632885e3, 1].reverse();
-  var b1_a1b = [1.0, 0.183105e-2, -0.3516396496e-4, 0.2457520174e-5, -0.240337019e-6].reverse();
-  var b1_a2b = [0.04687499995, -0.2002690873e-3, 0.8449199096e-5, -0.88228987e-6, 0.105787412e-6].reverse();
-
-  function bessel1(x) {
-    var a=0, a1=0, a2=0, y = x*x, xx = x - 2.356194491;
-    if(x < 8) {
-      a1 = x*_horner(b1_a1a, y);
-      a2 = _horner(b1_a2a, y);
-      a = a1/a2 + W * (besselj(x,1) * M.log(x) - 1 / x);
-    } else {
-      y = 64 / y;
-      a1=_horner(b1_a1b, y);
-      a2=_horner(b1_a2b, y);
-      a=M.sqrt(W/x)*(M.sin(xx)*a1+M.cos(xx)*a2*8/x);
-    }
-    return a;
-  }
-
-  return _bessel_wrap(bessel0, bessel1, 'BESSELY', 1, -1);
-})();
-var besseli = (function() {
-  var b0_a = [1.0, 3.5156229, 3.0899424, 1.2067492, 0.2659732, 0.360768e-1, 0.45813e-2].reverse();
-  var b0_b = [0.39894228, 0.1328592e-1, 0.225319e-2, -0.157565e-2, 0.916281e-2, -0.2057706e-1, 0.2635537e-1, -0.1647633e-1, 0.392377e-2].reverse();
-
-  function bessel0(x) {
-    if(x <= 3.75) return _horner(b0_a, x*x/(3.75*3.75));
-    return M.exp(M.abs(x))/M.sqrt(M.abs(x))*_horner(b0_b, 3.75/M.abs(x));
-  }
-
-  var b1_a = [0.5, 0.87890594, 0.51498869, 0.15084934, 0.2658733e-1, 0.301532e-2, 0.32411e-3].reverse();
-  var b1_b = [0.39894228, -0.3988024e-1, -0.362018e-2, 0.163801e-2, -0.1031555e-1, 0.2282967e-1, -0.2895312e-1, 0.1787654e-1, -0.420059e-2].reverse();
-
-  function bessel1(x) {
-    if(x < 3.75) return x * _horner(b1_a, x*x/(3.75*3.75));
-    return (x < 0 ? -1 : 1) * M.exp(M.abs(x))/M.sqrt(M.abs(x))*_horner(b1_b, 3.75/M.abs(x));
-  }
-
-  return function besseli(x, n) {
-    n = Math.round(n);
-    if(n === 0) return bessel0(x);
-    if(n === 1) return bessel1(x);
-    if(n < 0) return NaN;
-    if(M.abs(x) === 0) return 0;
-    if(x == Infinity) return Infinity;
-
-    var ret = 0.0, j, tox = 2 / M.abs(x), bip = 0.0, bi=1.0, bim=0.0;
-    var m=2*M.round((n+M.round(M.sqrt(40*n)))/2);
-    for (j=m;j>0;j--) {
-      bim=j*tox*bi + bip;
-      bip=bi; bi=bim;
-      if (M.abs(bi) > 1E10) {
-        bi *= 1E-10;
-        bip *= 1E-10;
-        ret *= 1E-10;
-      }
-      if(j == n) ret = bip;
-    }
-    ret *= besseli(x, 0) / bi;
-    return x < 0 && (n%2) ? -ret : ret;
-  };
-
-})();
-
-var besselk = (function() {
-  var b0_a = [-0.57721566, 0.42278420, 0.23069756, 0.3488590e-1, 0.262698e-2, 0.10750e-3, 0.74e-5].reverse();
-  var b0_b = [1.25331414, -0.7832358e-1, 0.2189568e-1, -0.1062446e-1, 0.587872e-2, -0.251540e-2, 0.53208e-3].reverse();
-
-  function bessel0(x) {
-    if(x <= 2) return -M.log(x/2) * besseli(x,0) + _horner(b0_a, x*x/4);
-    return M.exp(-x) / M.sqrt(x) * _horner(b0_b, 2/x);
-  }
-
-  var b1_a = [1.0, 0.15443144, -0.67278579, -0.18156897, -0.1919402e-1, -0.110404e-2, -0.4686e-4].reverse();
-  var b1_b = [1.25331414, 0.23498619, -0.3655620e-1, 0.1504268e-1, -0.780353e-2, 0.325614e-2, -0.68245e-3].reverse();
-
-  function bessel1(x) {
-    if(x <= 2) return M.log(x/2) * besseli(x,1) + (1/x) * _horner(b1_a, x*x/4);
-    return M.exp(-x)/M.sqrt(x)*_horner(b1_b, 2/x);
-  }
-
-  return _bessel_wrap(bessel0, bessel1, 'BESSELK', 2, 1);
-})();
-BESSEL.besselj = besselj;
-BESSEL.bessely = bessely;
-BESSEL.besseli = besseli;
-BESSEL.besselk = besselk;
-}));
-
+    return Formula(typeof window === 'undefined' ? __webpack_require__.g : window);
+})));
 
 /***/ }),
 
-/***/ 162:
+/***/ 572:
 /***/ (function(module) {
 
 (function (window, factory) {
     if (true) {
         module.exports = factory();
-    } else {}
+    } else // removed by dead control flow
+{}
 })(this, function () {
 var jStat = (function(Math, undefined) {
 
@@ -5256,515 +5382,22 @@ jStat.extend({
 });
 
 
-/***/ })
+/***/ }),
 
-/******/ 	});
-/************************************************************************/
-/******/ 	// The module cache
-/******/ 	var __webpack_module_cache__ = {};
-/******/ 	
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/ 		// Check if module is in cache
-/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
-/******/ 		if (cachedModule !== undefined) {
-/******/ 			return cachedModule.exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
-/******/ 			exports: {}
-/******/ 		};
-/******/ 	
-/******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/ 	
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/ 	
-/************************************************************************/
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	!function() {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = function(exports, definition) {
-/******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	!function() {
-/******/ 		__webpack_require__.o = function(obj, prop) { return Object.prototype.hasOwnProperty.call(obj, prop); }
-/******/ 	}();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	!function() {
-/******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = function(exports) {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	}();
-/******/ 	
-/************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-!function() {
+/***/ 633:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
 "use strict";
 
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "default": function() { return /* binding */ src_formula; }
-});
 
-// NAMESPACE OBJECT: ./node_modules/@formulajs/formulajs/lib/esm/index.mjs
-var esm_namespaceObject = {};
-__webpack_require__.r(esm_namespaceObject);
-__webpack_require__.d(esm_namespaceObject, {
-  "ABS": function() { return ABS; },
-  "ACCRINT": function() { return ACCRINT; },
-  "ACCRINTM": function() { return ACCRINTM; },
-  "ACOS": function() { return ACOS; },
-  "ACOSH": function() { return ACOSH; },
-  "ACOT": function() { return ACOT; },
-  "ACOTH": function() { return ACOTH; },
-  "AGGREGATE": function() { return AGGREGATE; },
-  "AMORDEGRC": function() { return AMORDEGRC; },
-  "AMORLINC": function() { return AMORLINC; },
-  "AND": function() { return AND; },
-  "ARABIC": function() { return ARABIC; },
-  "ASC": function() { return ASC; },
-  "ASIN": function() { return ASIN; },
-  "ASINH": function() { return ASINH; },
-  "ATAN": function() { return ATAN; },
-  "ATAN2": function() { return ATAN2; },
-  "ATANH": function() { return ATANH; },
-  "AVEDEV": function() { return AVEDEV; },
-  "AVERAGE": function() { return AVERAGE; },
-  "AVERAGEA": function() { return AVERAGEA; },
-  "AVERAGEIF": function() { return AVERAGEIF; },
-  "AVERAGEIFS": function() { return AVERAGEIFS; },
-  "BAHTTEXT": function() { return BAHTTEXT; },
-  "BASE": function() { return BASE; },
-  "BESSELI": function() { return BESSELI; },
-  "BESSELJ": function() { return BESSELJ; },
-  "BESSELK": function() { return BESSELK; },
-  "BESSELY": function() { return BESSELY; },
-  "BETA": function() { return BETA; },
-  "BETADIST": function() { return BETADIST; },
-  "BETAINV": function() { return BETAINV; },
-  "BIN2DEC": function() { return BIN2DEC; },
-  "BIN2HEX": function() { return BIN2HEX; },
-  "BIN2OCT": function() { return BIN2OCT; },
-  "BINOM": function() { return BINOM; },
-  "BINOMDIST": function() { return BINOMDIST; },
-  "BITAND": function() { return BITAND; },
-  "BITLSHIFT": function() { return BITLSHIFT; },
-  "BITOR": function() { return BITOR; },
-  "BITRSHIFT": function() { return BITRSHIFT; },
-  "BITXOR": function() { return BITXOR; },
-  "CEILING": function() { return CEILING; },
-  "CEILINGMATH": function() { return CEILINGMATH; },
-  "CEILINGPRECISE": function() { return CEILINGPRECISE; },
-  "CELL": function() { return CELL; },
-  "CHAR": function() { return CHAR; },
-  "CHIDIST": function() { return CHIDIST; },
-  "CHIDISTRT": function() { return CHIDISTRT; },
-  "CHIINV": function() { return CHIINV; },
-  "CHIINVRT": function() { return CHIINVRT; },
-  "CHISQ": function() { return CHISQ; },
-  "CHITEST": function() { return CHITEST; },
-  "CHOOSE": function() { return CHOOSE; },
-  "CLEAN": function() { return CLEAN; },
-  "CODE": function() { return CODE; },
-  "COLUMN": function() { return COLUMN; },
-  "COLUMNS": function() { return COLUMNS; },
-  "COMBIN": function() { return COMBIN; },
-  "COMBINA": function() { return COMBINA; },
-  "COMPLEX": function() { return COMPLEX; },
-  "CONCAT": function() { return CONCAT; },
-  "CONCATENATE": function() { return CONCATENATE; },
-  "CONFIDENCE": function() { return CONFIDENCE; },
-  "CONVERT": function() { return CONVERT; },
-  "CORREL": function() { return CORREL; },
-  "COS": function() { return COS; },
-  "COSH": function() { return COSH; },
-  "COT": function() { return COT; },
-  "COTH": function() { return COTH; },
-  "COUNT": function() { return COUNT; },
-  "COUNTA": function() { return COUNTA; },
-  "COUNTBLANK": function() { return COUNTBLANK; },
-  "COUNTIF": function() { return COUNTIF; },
-  "COUNTIFS": function() { return COUNTIFS; },
-  "COUPDAYBS": function() { return COUPDAYBS; },
-  "COUPDAYS": function() { return COUPDAYS; },
-  "COUPDAYSNC": function() { return COUPDAYSNC; },
-  "COUPNCD": function() { return COUPNCD; },
-  "COUPNUM": function() { return COUPNUM; },
-  "COUPPCD": function() { return COUPPCD; },
-  "COVAR": function() { return COVAR; },
-  "COVARIANCE": function() { return COVARIANCE; },
-  "COVARIANCEP": function() { return COVARIANCEP; },
-  "COVARIANCES": function() { return COVARIANCES; },
-  "CRITBINOM": function() { return CRITBINOM; },
-  "CSC": function() { return CSC; },
-  "CSCH": function() { return CSCH; },
-  "CUMIPMT": function() { return CUMIPMT; },
-  "CUMPRINC": function() { return CUMPRINC; },
-  "DATE": function() { return DATE; },
-  "DATEDIF": function() { return DATEDIF; },
-  "DATEVALUE": function() { return DATEVALUE; },
-  "DAVERAGE": function() { return DAVERAGE; },
-  "DAY": function() { return DAY; },
-  "DAYS": function() { return DAYS; },
-  "DAYS360": function() { return DAYS360; },
-  "DB": function() { return DB; },
-  "DBCS": function() { return DBCS; },
-  "DCOUNT": function() { return DCOUNT; },
-  "DCOUNTA": function() { return DCOUNTA; },
-  "DDB": function() { return DDB; },
-  "DEC2BIN": function() { return DEC2BIN; },
-  "DEC2HEX": function() { return DEC2HEX; },
-  "DEC2OCT": function() { return DEC2OCT; },
-  "DECIMAL": function() { return DECIMAL; },
-  "DEGREES": function() { return DEGREES; },
-  "DELTA": function() { return DELTA; },
-  "DEVSQ": function() { return DEVSQ; },
-  "DGET": function() { return DGET; },
-  "DISC": function() { return DISC; },
-  "DMAX": function() { return DMAX; },
-  "DMIN": function() { return DMIN; },
-  "DOLLAR": function() { return DOLLAR; },
-  "DOLLARDE": function() { return DOLLARDE; },
-  "DOLLARFR": function() { return DOLLARFR; },
-  "DPRODUCT": function() { return DPRODUCT; },
-  "DSTDEV": function() { return DSTDEV; },
-  "DSTDEVP": function() { return DSTDEVP; },
-  "DSUM": function() { return DSUM; },
-  "DURATION": function() { return DURATION; },
-  "DVAR": function() { return DVAR; },
-  "DVARP": function() { return DVARP; },
-  "EDATE": function() { return EDATE; },
-  "EFFECT": function() { return EFFECT; },
-  "EOMONTH": function() { return EOMONTH; },
-  "ERF": function() { return ERF; },
-  "ERFC": function() { return ERFC; },
-  "ERFCPRECISE": function() { return ERFCPRECISE; },
-  "ERFPRECISE": function() { return ERFPRECISE; },
-  "ERROR": function() { return ERROR; },
-  "EVEN": function() { return EVEN; },
-  "EXACT": function() { return EXACT; },
-  "EXP": function() { return EXP; },
-  "EXPON": function() { return EXPON; },
-  "EXPONDIST": function() { return EXPONDIST; },
-  "F": function() { return F; },
-  "FACT": function() { return FACT; },
-  "FACTDOUBLE": function() { return FACTDOUBLE; },
-  "FALSE": function() { return FALSE; },
-  "FDIST": function() { return FDIST; },
-  "FDISTRT": function() { return FDISTRT; },
-  "FIND": function() { return FIND; },
-  "FINV": function() { return FINV; },
-  "FINVRT": function() { return FINVRT; },
-  "FISHER": function() { return FISHER; },
-  "FISHERINV": function() { return FISHERINV; },
-  "FIXED": function() { return FIXED; },
-  "FLOOR": function() { return FLOOR; },
-  "FLOORMATH": function() { return FLOORMATH; },
-  "FLOORPRECISE": function() { return FLOORPRECISE; },
-  "FORECAST": function() { return FORECAST; },
-  "FREQUENCY": function() { return FREQUENCY; },
-  "FTEST": function() { return FTEST; },
-  "FV": function() { return FV; },
-  "FVSCHEDULE": function() { return FVSCHEDULE; },
-  "GAMMA": function() { return GAMMA; },
-  "GAMMADIST": function() { return GAMMADIST; },
-  "GAMMAINV": function() { return GAMMAINV; },
-  "GAMMALN": function() { return GAMMALN; },
-  "GAMMALNPRECISE": function() { return GAMMALNPRECISE; },
-  "GAUSS": function() { return GAUSS; },
-  "GCD": function() { return GCD; },
-  "GEOMEAN": function() { return GEOMEAN; },
-  "GESTEP": function() { return GESTEP; },
-  "GROWTH": function() { return GROWTH; },
-  "HARMEAN": function() { return HARMEAN; },
-  "HEX2BIN": function() { return HEX2BIN; },
-  "HEX2DEC": function() { return HEX2DEC; },
-  "HEX2OCT": function() { return HEX2OCT; },
-  "HLOOKUP": function() { return HLOOKUP; },
-  "HOUR": function() { return HOUR; },
-  "HYPGEOM": function() { return HYPGEOM; },
-  "HYPGEOMDIST": function() { return HYPGEOMDIST; },
-  "IF": function() { return IF; },
-  "IFERROR": function() { return IFERROR; },
-  "IFNA": function() { return IFNA; },
-  "IFS": function() { return IFS; },
-  "IMABS": function() { return IMABS; },
-  "IMAGINARY": function() { return IMAGINARY; },
-  "IMARGUMENT": function() { return IMARGUMENT; },
-  "IMCONJUGATE": function() { return IMCONJUGATE; },
-  "IMCOS": function() { return IMCOS; },
-  "IMCOSH": function() { return IMCOSH; },
-  "IMCOT": function() { return IMCOT; },
-  "IMCSC": function() { return IMCSC; },
-  "IMCSCH": function() { return IMCSCH; },
-  "IMDIV": function() { return IMDIV; },
-  "IMEXP": function() { return IMEXP; },
-  "IMLN": function() { return IMLN; },
-  "IMLOG10": function() { return IMLOG10; },
-  "IMLOG2": function() { return IMLOG2; },
-  "IMPOWER": function() { return IMPOWER; },
-  "IMPRODUCT": function() { return IMPRODUCT; },
-  "IMREAL": function() { return IMREAL; },
-  "IMSEC": function() { return IMSEC; },
-  "IMSECH": function() { return IMSECH; },
-  "IMSIN": function() { return IMSIN; },
-  "IMSINH": function() { return IMSINH; },
-  "IMSQRT": function() { return IMSQRT; },
-  "IMSUB": function() { return IMSUB; },
-  "IMSUM": function() { return IMSUM; },
-  "IMTAN": function() { return IMTAN; },
-  "INDEX": function() { return INDEX; },
-  "INFO": function() { return INFO; },
-  "INT": function() { return INT; },
-  "INTERCEPT": function() { return INTERCEPT; },
-  "INTRATE": function() { return INTRATE; },
-  "IPMT": function() { return IPMT; },
-  "IRR": function() { return IRR; },
-  "ISBLANK": function() { return ISBLANK; },
-  "ISERR": function() { return ISERR; },
-  "ISERROR": function() { return ISERROR; },
-  "ISEVEN": function() { return ISEVEN; },
-  "ISFORMULA": function() { return ISFORMULA; },
-  "ISLOGICAL": function() { return ISLOGICAL; },
-  "ISNA": function() { return ISNA; },
-  "ISNONTEXT": function() { return ISNONTEXT; },
-  "ISNUMBER": function() { return ISNUMBER; },
-  "ISO": function() { return ISO; },
-  "ISODD": function() { return ISODD; },
-  "ISOWEEKNUM": function() { return ISOWEEKNUM; },
-  "ISPMT": function() { return ISPMT; },
-  "ISREF": function() { return ISREF; },
-  "ISTEXT": function() { return ISTEXT; },
-  "KURT": function() { return KURT; },
-  "LARGE": function() { return LARGE; },
-  "LCM": function() { return LCM; },
-  "LEFT": function() { return LEFT; },
-  "LEN": function() { return LEN; },
-  "LINEST": function() { return LINEST; },
-  "LN": function() { return LN; },
-  "LOG": function() { return LOG; },
-  "LOG10": function() { return LOG10; },
-  "LOGEST": function() { return LOGEST; },
-  "LOGINV": function() { return LOGINV; },
-  "LOGNORM": function() { return LOGNORM; },
-  "LOGNORMDIST": function() { return LOGNORMDIST; },
-  "LOGNORMINV": function() { return LOGNORMINV; },
-  "LOOKUP": function() { return LOOKUP; },
-  "LOWER": function() { return LOWER; },
-  "MATCH": function() { return MATCH; },
-  "MAX": function() { return MAX; },
-  "MAXA": function() { return MAXA; },
-  "MDURATION": function() { return MDURATION; },
-  "MEDIAN": function() { return MEDIAN; },
-  "MID": function() { return MID; },
-  "MIN": function() { return MIN; },
-  "MINA": function() { return MINA; },
-  "MINUTE": function() { return MINUTE; },
-  "MIRR": function() { return MIRR; },
-  "MMULT": function() { return MMULT; },
-  "MOD": function() { return MOD; },
-  "MODE": function() { return MODE; },
-  "MODEMULT": function() { return MODEMULT; },
-  "MODESNGL": function() { return MODESNGL; },
-  "MONTH": function() { return MONTH; },
-  "MROUND": function() { return MROUND; },
-  "MULTINOMIAL": function() { return MULTINOMIAL; },
-  "MUNIT": function() { return MUNIT; },
-  "N": function() { return N; },
-  "NA": function() { return NA; },
-  "NEGBINOM": function() { return NEGBINOM; },
-  "NEGBINOMDIST": function() { return NEGBINOMDIST; },
-  "NETWORKDAYS": function() { return NETWORKDAYS; },
-  "NETWORKDAYSINTL": function() { return NETWORKDAYSINTL; },
-  "NOMINAL": function() { return NOMINAL; },
-  "NORM": function() { return NORM; },
-  "NORMDIST": function() { return NORMDIST; },
-  "NORMINV": function() { return NORMINV; },
-  "NORMSDIST": function() { return NORMSDIST; },
-  "NORMSINV": function() { return NORMSINV; },
-  "NOT": function() { return NOT; },
-  "NOW": function() { return NOW; },
-  "NPER": function() { return NPER; },
-  "NPV": function() { return NPV; },
-  "NUMBERVALUE": function() { return NUMBERVALUE; },
-  "OCT2BIN": function() { return OCT2BIN; },
-  "OCT2DEC": function() { return OCT2DEC; },
-  "OCT2HEX": function() { return OCT2HEX; },
-  "ODD": function() { return ODD; },
-  "ODDFPRICE": function() { return ODDFPRICE; },
-  "ODDFYIELD": function() { return ODDFYIELD; },
-  "ODDLPRICE": function() { return ODDLPRICE; },
-  "ODDLYIELD": function() { return ODDLYIELD; },
-  "OR": function() { return OR; },
-  "PDURATION": function() { return PDURATION; },
-  "PEARSON": function() { return PEARSON; },
-  "PERCENTILE": function() { return PERCENTILE; },
-  "PERCENTILEEXC": function() { return PERCENTILEEXC; },
-  "PERCENTILEINC": function() { return PERCENTILEINC; },
-  "PERCENTRANK": function() { return PERCENTRANK; },
-  "PERCENTRANKEXC": function() { return PERCENTRANKEXC; },
-  "PERCENTRANKINC": function() { return PERCENTRANKINC; },
-  "PERMUT": function() { return PERMUT; },
-  "PERMUTATIONA": function() { return PERMUTATIONA; },
-  "PHI": function() { return PHI; },
-  "PI": function() { return PI; },
-  "PMT": function() { return PMT; },
-  "POISSON": function() { return POISSON; },
-  "POISSONDIST": function() { return POISSONDIST; },
-  "POWER": function() { return POWER; },
-  "PPMT": function() { return PPMT; },
-  "PRICE": function() { return PRICE; },
-  "PRICEDISC": function() { return PRICEDISC; },
-  "PRICEMAT": function() { return PRICEMAT; },
-  "PROB": function() { return PROB; },
-  "PRODUCT": function() { return PRODUCT; },
-  "PRONETIC": function() { return PRONETIC; },
-  "PROPER": function() { return PROPER; },
-  "PV": function() { return PV; },
-  "QUARTILE": function() { return QUARTILE; },
-  "QUARTILEEXC": function() { return QUARTILEEXC; },
-  "QUARTILEINC": function() { return QUARTILEINC; },
-  "QUOTIENT": function() { return QUOTIENT; },
-  "RADIANS": function() { return RADIANS; },
-  "RAND": function() { return RAND; },
-  "RANDBETWEEN": function() { return RANDBETWEEN; },
-  "RANK": function() { return RANK; },
-  "RANKAVG": function() { return RANKAVG; },
-  "RANKEQ": function() { return RANKEQ; },
-  "RATE": function() { return RATE; },
-  "RECEIVED": function() { return RECEIVED; },
-  "REPLACE": function() { return REPLACE; },
-  "REPT": function() { return REPT; },
-  "RIGHT": function() { return RIGHT; },
-  "ROMAN": function() { return ROMAN; },
-  "ROUND": function() { return ROUND; },
-  "ROUNDDOWN": function() { return ROUNDDOWN; },
-  "ROUNDUP": function() { return ROUNDUP; },
-  "ROW": function() { return ROW; },
-  "ROWS": function() { return ROWS; },
-  "RRI": function() { return RRI; },
-  "RSQ": function() { return RSQ; },
-  "SEARCH": function() { return SEARCH; },
-  "SEC": function() { return SEC; },
-  "SECH": function() { return SECH; },
-  "SECOND": function() { return SECOND; },
-  "SERIESSUM": function() { return SERIESSUM; },
-  "SHEET": function() { return SHEET; },
-  "SHEETS": function() { return SHEETS; },
-  "SIGN": function() { return SIGN; },
-  "SIN": function() { return SIN; },
-  "SINH": function() { return SINH; },
-  "SKEW": function() { return SKEW; },
-  "SKEWP": function() { return SKEWP; },
-  "SLN": function() { return SLN; },
-  "SLOPE": function() { return SLOPE; },
-  "SMALL": function() { return SMALL; },
-  "SORT": function() { return SORT; },
-  "SQRT": function() { return SQRT; },
-  "SQRTPI": function() { return SQRTPI; },
-  "STANDARDIZE": function() { return STANDARDIZE; },
-  "STDEV": function() { return STDEV; },
-  "STDEVA": function() { return STDEVA; },
-  "STDEVP": function() { return STDEVP; },
-  "STDEVPA": function() { return STDEVPA; },
-  "STDEVS": function() { return STDEVS; },
-  "STEYX": function() { return STEYX; },
-  "SUBSTITUTE": function() { return SUBSTITUTE; },
-  "SUBTOTAL": function() { return SUBTOTAL; },
-  "SUM": function() { return SUM; },
-  "SUMIF": function() { return SUMIF; },
-  "SUMIFS": function() { return SUMIFS; },
-  "SUMPRODUCT": function() { return SUMPRODUCT; },
-  "SUMSQ": function() { return SUMSQ; },
-  "SUMX2MY2": function() { return SUMX2MY2; },
-  "SUMX2PY2": function() { return SUMX2PY2; },
-  "SUMXMY2": function() { return SUMXMY2; },
-  "SWITCH": function() { return SWITCH; },
-  "SYD": function() { return SYD; },
-  "T": function() { return T; },
-  "TAN": function() { return TAN; },
-  "TANH": function() { return TANH; },
-  "TBILLEQ": function() { return TBILLEQ; },
-  "TBILLPRICE": function() { return TBILLPRICE; },
-  "TBILLYIELD": function() { return TBILLYIELD; },
-  "TDIST": function() { return TDIST; },
-  "TDISTRT": function() { return TDISTRT; },
-  "TEXT": function() { return TEXT; },
-  "TEXTJOIN": function() { return TEXTJOIN; },
-  "TIME": function() { return TIME; },
-  "TIMEVALUE": function() { return TIMEVALUE; },
-  "TINV": function() { return TINV; },
-  "TODAY": function() { return TODAY; },
-  "TRANSPOSE": function() { return TRANSPOSE; },
-  "TREND": function() { return TREND; },
-  "TRIM": function() { return TRIM; },
-  "TRIMMEAN": function() { return TRIMMEAN; },
-  "TRUE": function() { return TRUE; },
-  "TRUNC": function() { return TRUNC; },
-  "TTEST": function() { return TTEST; },
-  "TYPE": function() { return TYPE; },
-  "UNICHAR": function() { return UNICHAR; },
-  "UNICODE": function() { return UNICODE; },
-  "UNIQUE": function() { return UNIQUE; },
-  "UPPER": function() { return UPPER; },
-  "VALUE": function() { return VALUE; },
-  "VAR": function() { return VAR; },
-  "VARA": function() { return VARA; },
-  "VARP": function() { return VARP; },
-  "VARPA": function() { return VARPA; },
-  "VARS": function() { return VARS; },
-  "VDB": function() { return VDB; },
-  "VLOOKUP": function() { return VLOOKUP; },
-  "WEEKDAY": function() { return WEEKDAY; },
-  "WEEKNUM": function() { return WEEKNUM; },
-  "WEIBULL": function() { return WEIBULL; },
-  "WEIBULLDIST": function() { return WEIBULLDIST; },
-  "WORKDAY": function() { return WORKDAY; },
-  "WORKDAYINTL": function() { return WORKDAYINTL; },
-  "XIRR": function() { return XIRR; },
-  "XNPV": function() { return XNPV; },
-  "XOR": function() { return XOR; },
-  "YEAR": function() { return YEAR; },
-  "YEARFRAC": function() { return YEARFRAC; },
-  "YIELD": function() { return YIELD; },
-  "YIELDDISC": function() { return YIELDDISC; },
-  "YIELDMAT": function() { return YIELDMAT; },
-  "Z": function() { return Z; },
-  "ZTEST": function() { return ZTEST; },
-  "utils": function() { return utils; }
-});
-
-// EXTERNAL MODULE: ./node_modules/jstat/dist/jstat.js
-var jstat = __webpack_require__(162);
-// EXTERNAL MODULE: ./node_modules/bessel/bessel.js
-var bessel = __webpack_require__(765);
-;// CONCATENATED MODULE: ./node_modules/@formulajs/formulajs/lib/esm/index.mjs
-
-
+var jStat = __webpack_require__(572);
+var bessel = __webpack_require__(809);
 
 const nil = new Error('#NULL!');
 const div0 = new Error('#DIV/0!');
 const value = new Error('#VALUE!');
 const ref = new Error('#REF!');
-const esm_name = new Error('#NAME?');
+const name = new Error('#NAME?');
 const num = new Error('#NUM!');
 const na = new Error('#N/A');
 const error = new Error('#ERROR!');
@@ -5776,238 +5409,24 @@ var errors = /*#__PURE__*/Object.freeze({
   div0: div0,
   error: error,
   na: na,
-  name: esm_name,
+  name: name,
   nil: nil,
   num: num,
   ref: ref,
   value: value
 });
 
-// Arrays
-function argsToArray(args) {
-  const result = [];
+let returnSerial = false;
 
-  arrayEach(args, (value) => {
-    result.push(value);
-  });
-
-  return result
+function useSerial() {
+  returnSerial = true;
 }
 
-function arrayEach(array, iteratee) {
-  let index = -1;
-  const length = array.length;
-
-  while (++index < length) {
-    if (iteratee(array[index], index, array) === false) {
-      break
-    }
-  }
-
-  return array
+function useDate() {
+  returnSerial = false;
 }
 
-function arrayValuesToNumbers(arr) {
-  let n = arr.length;
-  let el;
-
-  while (n--) {
-    el = arr[n];
-
-    if (typeof el === 'number') {
-      continue
-    }
-
-    if (el === true) {
-      arr[n] = 1;
-      continue
-    }
-
-    if (el === false) {
-      arr[n] = 0;
-      continue
-    }
-
-    if (typeof el === 'string') {
-      const number = parseNumber(el);
-
-      arr[n] = number instanceof Error ? 0 : number;
-    }
-  }
-
-  return arr
-}
-
-function fillMatrix(matrix, fill_value) {
-  if (!matrix) {
-    return value
-  }
-
-  if (!matrix.every((el) => Array.isArray(el)) || matrix.length === 0) {
-    matrix = [[...matrix]];
-  }
-
-  matrix.map((arr, i) => {
-    arr.map((a, j) => {
-      if (!a) {
-        matrix[i][j] = 0;
-      }
-    });
-  });
-
-  const longestArrayIndex = matrix.reduce((acc, arr, i) => (arr.length > matrix[acc].length ? i : acc), 0);
-  const longestArrayLength = matrix[longestArrayIndex].length;
-
-  return matrix.map((el) => [...el, ...Array(longestArrayLength - el.length).fill(fill_value ? fill_value : 0)])
-}
-
-function flatten() {
-  let result;
-
-  if (arguments.length === 1) {
-    const argument = arguments[0];
-    result = isArrayLike(argument) ? argsToArray.apply(null, arguments) : [argument];
-  } else {
-    result = Array.from(arguments);
-  }
-
-  while (!isFlat(result)) {
-    result = flattenShallow(result);
-  }
-
-  return result
-}
-
-function flattenShallow(array) {
-  if (!array || !array.reduce) {
-    return [array]
-  }
-
-  return array.reduce((a, b) => {
-    const aIsArray = Array.isArray(a);
-    const bIsArray = Array.isArray(b);
-
-    if (aIsArray && bIsArray) {
-      return a.concat(b)
-    }
-
-    if (aIsArray) {
-      a.push(b);
-
-      return a
-    }
-
-    if (bIsArray) {
-      return [a].concat(b)
-    }
-
-    return [a, b]
-  })
-}
-
-function initial(array, idx) {
-  idx = idx || 1;
-
-  if (!array || typeof array.slice !== 'function') {
-    return array
-  }
-
-  return array.slice(0, array.length - idx)
-}
-
-function isArrayLike(a) {
-  return a != null && typeof a.length === 'number' && typeof a !== 'string'
-}
-
-function isFlat(array) {
-  if (!array) {
-    return false
-  }
-
-  for (let i = 0; i < array.length; ++i) {
-    if (Array.isArray(array[i])) {
-      return false
-    }
-  }
-
-  return true
-}
-
-function rest(array, idx) {
-  idx = idx || 1;
-
-  if (!array || typeof array.slice !== 'function') {
-    return array
-  }
-
-  return array.slice(idx)
-}
-
-function transpose(matrix) {
-  if (!matrix) {
-    return value
-  }
-
-  return matrix[0].map((col, i) => matrix.map((row) => row[i]))
-}
-
-// Databases
-function findField(database, title) {
-  let index = null;
-
-  arrayEach(database, (value, i) => {
-    if (value[0] === title) {
-      index = i;
-
-      return false
-    }
-  });
-
-  // Return error if the input field title is incorrect
-  if (index == null) {
-    return value
-  }
-
-  return index
-}
-
-// Errors
-function anyError() {
-  for (let n = 0; n < arguments.length; n++) {
-    if (arguments[n] instanceof Error) {
-      return arguments[n]
-    }
-  }
-
-  return undefined
-}
-
-function anyIsError() {
-  let n = arguments.length;
-
-  while (n--) {
-    if (arguments[n] instanceof Error) {
-      return true
-    }
-  }
-
-  return false
-}
-
-// Numbers
-function cleanFloat(number) {
-  const power = 1e14;
-
-  return Math.round(number * power) / power
-}
-
-function numbers() {
-  const possibleNumbers = flatten.apply(null, arguments);
-
-  return possibleNumbers.filter((el) => typeof el === 'number')
-}
-
-function serialNumberToDate(serial) {
+function serialToDate(serial) {
   if (serial < 60) {
     serial += 1;
   }
@@ -6036,157 +5455,22 @@ function serialNumberToDate(serial) {
   return new Date(date_info.getUTCFullYear(), month, days, hours, minutes, seconds)
 }
 
-// Parsers
-function parseBool(bool) {
-  if (typeof bool === 'boolean') {
-    return bool
-  }
+function dateToSerial(date) {
+  const d1900 = new Date(1900, 0, 1);
 
-  if (bool instanceof Error) {
-    return bool
-  }
+  const addOn = date > -22038912e5 ? 2 : 1;
 
-  if (typeof bool === 'number') {
-    return bool !== 0
-  }
-
-  if (typeof bool === 'string') {
-    const up = bool.toUpperCase();
-
-    if (up === 'TRUE') {
-      return true
-    }
-
-    if (up === 'FALSE') {
-      return false
-    }
-  }
-
-  if (bool instanceof Date && !isNaN(bool)) {
-    return true
-  }
-
-  return value
+  return Math.ceil((date - d1900) / 86400000) + addOn
 }
 
-function parseDate(date) {
-  if (!isNaN(date)) {
-    if (date instanceof Date) {
-      return new Date(date)
-    }
-
-    const d = parseFloat(date);
-
-    if (d < 0 || d >= 2958466) {
-      return num
-    }
-
-    return serialNumberToDate(d)
-  }
-
-  if (typeof date === 'string') {
-    date = /(\d{4})-(\d\d?)-(\d\d?)$/.test(date) ? new Date(date + 'T00:00:00.000') : new Date(date);
-
-    if (!isNaN(date)) {
-      return date
-    }
-  }
-
-  return value
-}
-
-function parseDateArray(arr) {
-  let len = arr.length;
-  let parsed;
-
-  while (len--) {
-    parsed = parseDate(arr[len]);
-
-    if (parsed === value) {
-      return parsed
-    }
-
-    arr[len] = parsed;
-  }
-
-  return arr
-}
-
-function parseNumber(string) {
-  if (string instanceof Error) {
-    return string
-  }
-
-  if (string === undefined || string === null) {
-    return 0
-  }
-
-  if (typeof string === 'boolean') {
-    string = +string;
-  }
-
-  if (!isNaN(string) && string !== '') {
-    return parseFloat(string)
-  }
-
-  return value
-}
-
-function parseNumberArray(arr) {
-  let len;
-
-  if (!arr || (len = arr.length) === 0) {
-    return value
-  }
-
-  let parsed;
-
-  while (len--) {
-    if (arr[len] instanceof Error) {
-      return arr[len]
-    }
-
-    parsed = parseNumber(arr[len]);
-
-    if (parsed instanceof Error) {
-      return parsed
-    }
-
-    arr[len] = parsed;
-  }
-
-  return arr
-}
-
-function parseString(string) {
-  if (string instanceof Error) {
-    return string
-  }
-
-  if (string === undefined || string === null) {
-    return ''
-  }
-
-  return string.toString()
-}
-
-// Strings
-function anyIsString() {
-  let n = arguments.length;
-
-  while (n--) {
-    if (typeof arguments[n] === 'string') {
-      return true
-    }
-  }
-
-  return false
-}
-
-// Misc
-function isDefined(arg) {
-  return arg !== undefined && arg !== null
-}
+var date = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  dateToSerial: dateToSerial,
+  get returnSerial () { return returnSerial; },
+  serialToDate: serialToDate,
+  useDate: useDate,
+  useSerial: useSerial
+});
 
 const defaultOperator = '=';
 const validSymbols = ['>', '>=', '<', '<=', '=', '<>'];
@@ -6382,18 +5666,434 @@ function parse(expression) {
 
 const compute = computeExpression;
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns information about the formatting, location, or contents of a value.
- *
- * Category: Information
- *
- * @returns
- */
-function CELL() {
-  throw new Error('CELL is not implemented')
+// Arrays
+function argsToArray(args) {
+  const result = [];
+
+  arrayEach(args, (value) => {
+    result.push(value);
+  });
+
+  return result
+}
+
+function arrayEach(array, iteratee) {
+  let index = -1;
+  const length = array.length;
+
+  while (++index < length) {
+    if (iteratee(array[index], index, array) === false) {
+      break
+    }
+  }
+
+  return array
+}
+
+function arrayValuesToNumbers(arr) {
+  let n = arr.length;
+  let el;
+
+  while (n--) {
+    el = arr[n];
+
+    if (typeof el === 'number') {
+      continue
+    }
+
+    if (el === true) {
+      arr[n] = 1;
+      continue
+    }
+
+    if (el === false) {
+      arr[n] = 0;
+      continue
+    }
+
+    if (typeof el === 'string') {
+      const number = parseNumber(el);
+
+      arr[n] = number instanceof Error ? 0 : number;
+    }
+  }
+
+  return arr
+}
+
+function fillMatrix(matrix, fill_value) {
+  if (!matrix) {
+    return value
+  }
+
+  if (!matrix.every((el) => Array.isArray(el)) || matrix.length === 0) {
+    matrix = [[...matrix]];
+  }
+
+  matrix.map((arr, i) => {
+    arr.map((a, j) => {
+      if (!a) {
+        matrix[i][j] = 0;
+      }
+    });
+  });
+
+  const longestArrayIndex = matrix.reduce((acc, arr, i) => (arr.length > matrix[acc].length ? i : acc), 0);
+  const longestArrayLength = matrix[longestArrayIndex].length;
+
+  return matrix.map((el) => [...el, ...Array(longestArrayLength - el.length).fill(0)])
+}
+
+function flatten() {
+  let result;
+
+  if (arguments.length === 1) {
+    const argument = arguments[0];
+    result = isArrayLike(argument) ? argsToArray.apply(null, arguments) : [argument];
+  } else {
+    result = Array.from(arguments);
+  }
+
+  while (!isFlat(result)) {
+    result = flattenShallow(result);
+  }
+
+  return result
+}
+
+function flattenShallow(array) {
+  if (!array || !array.reduce) {
+    return [array]
+  }
+
+  return array.reduce((a, b) => {
+    const aIsArray = Array.isArray(a);
+    const bIsArray = Array.isArray(b);
+
+    if (aIsArray && bIsArray) {
+      return a.concat(b)
+    }
+
+    if (aIsArray) {
+      a.push(b);
+
+      return a
+    }
+
+    if (bIsArray) {
+      return [a].concat(b)
+    }
+
+    return [a, b]
+  })
+}
+
+function initial(array, idx) {
+  idx = idx || 1;
+
+  if (!array || typeof array.slice !== 'function') {
+    return array
+  }
+
+  return array.slice(0, array.length - idx)
+}
+
+function isArrayLike(a) {
+  return a != null && typeof a.length === 'number' && typeof a !== 'string'
+}
+
+function isFlat(array) {
+  if (!array) {
+    return false
+  }
+
+  for (let i = 0; i < array.length; ++i) {
+    if (Array.isArray(array[i])) {
+      return false
+    }
+  }
+
+  return true
+}
+
+function rest(array, idx) {
+  idx = idx || 1;
+
+  if (!array || typeof array.slice !== 'function') {
+    return array
+  }
+
+  return array.slice(idx)
+}
+
+function transpose(matrix) {
+  if (!matrix) {
+    return value
+  }
+
+  return matrix[0].map((col, i) => matrix.map((row) => row[i]))
+}
+
+// Databases
+function findField(database, title) {
+  let index = null;
+
+  arrayEach(database, (value, i) => {
+    if (value[0] === title) {
+      index = i;
+
+      return false
+    }
+  });
+
+  // Return error if the input field title is incorrect
+  if (index == null) {
+    return value
+  }
+
+  return index
+}
+
+// Errors
+function anyError() {
+  for (let n = 0; n < arguments.length; n++) {
+    if (arguments[n] instanceof Error) {
+      return arguments[n]
+    }
+  }
+
+  return undefined
+}
+
+function anyIsError() {
+  let n = arguments.length;
+
+  while (n--) {
+    if (arguments[n] instanceof Error) {
+      return true
+    }
+  }
+
+  return false
+}
+
+// Numbers
+function cleanFloat(number) {
+  const power = 1e14;
+
+  return Math.round(number * power) / power
+}
+
+function numbers() {
+  const possibleNumbers = flatten.apply(null, arguments);
+
+  return possibleNumbers.filter((el) => typeof el === 'number')
+}
+
+// Parsers
+function parseBool(bool) {
+  if (typeof bool === 'boolean') {
+    return bool
+  }
+
+  if (bool instanceof Error) {
+    return bool
+  }
+
+  if (typeof bool === 'number') {
+    return bool !== 0
+  }
+
+  if (typeof bool === 'string') {
+    const up = bool.toUpperCase();
+
+    if (up === 'TRUE') {
+      return true
+    }
+
+    if (up === 'FALSE') {
+      return false
+    }
+  }
+
+  if (bool instanceof Date && !isNaN(bool)) {
+    return true
+  }
+
+  return value
+}
+
+function parseDate(date) {
+  if (!isNaN(date)) {
+    if (date instanceof Date) {
+      return new Date(date)
+    }
+
+    const d = parseFloat(date);
+
+    if (d < 0 || d >= 2958466) {
+      return num
+    }
+
+    return serialToDate(d)
+  }
+
+  if (typeof date === 'string') {
+    date = /(\d{4})-(\d\d?)-(\d\d?)$/.test(date) ? new Date(date + 'T00:00:00.000') : new Date(date);
+
+    if (!isNaN(date)) {
+      return date
+    }
+  }
+
+  return value
+}
+
+function parseDateArray(arr) {
+  let len = arr.length;
+  let parsed;
+
+  while (len--) {
+    parsed = parseDate(arr[len]);
+
+    if (parsed === value) {
+      return parsed
+    }
+
+    arr[len] = parsed;
+  }
+
+  return arr
+}
+
+function parseNumber(string) {
+  if (string instanceof Error) {
+    return string
+  }
+
+  if (string === undefined || string === null) {
+    return 0
+  }
+
+  if (typeof string === 'boolean') {
+    string = +string;
+  }
+
+  if (!isNaN(string) && string !== '') {
+    return parseFloat(string)
+  }
+
+  return value
+}
+
+function parseNumberArray(arr) {
+  let len;
+
+  if (!arr || (len = arr.length) === 0) {
+    return value
+  }
+
+  let parsed;
+
+  while (len--) {
+    if (arr[len] instanceof Error) {
+      return arr[len]
+    }
+
+    parsed = parseNumber(arr[len]);
+
+    if (parsed instanceof Error) {
+      return parsed
+    }
+
+    arr[len] = parsed;
+  }
+
+  return arr
+}
+
+function parseString(string) {
+  if (string instanceof Error) {
+    return string
+  }
+
+  if (string === undefined || string === null) {
+    return ''
+  }
+
+  return string.toString()
+}
+
+// Strings
+function anyIsString() {
+  let n = arguments.length;
+
+  while (n--) {
+    if (typeof arguments[n] === 'string') {
+      return true
+    }
+  }
+
+  return false
+}
+
+// Misc
+//Filters values from a given range based on multiple criteria.
+//Returns an array containing the values that satisfy all the specified criteria.
+function applyCriteria() {
+  const args = argsToArray(arguments);
+  const range = parseNumberArray(flatten(args.shift()));
+  if (range instanceof Error) {
+    return range
+  }
+
+  const criterias = args;
+  const criteriaLength = criterias.length / 2;
+
+  for (let i = 0; i < criteriaLength; i++) {
+    criterias[i * 2] = flatten(criterias[i * 2]);
+  }
+
+  let values = [];
+
+  for (let i = 0; i < range.length; i++) {
+    let isMetCondition = false;
+
+    for (let j = 0; j < criteriaLength; j++) {
+      const valueToTest = criterias[j * 2][i];
+      const criteria = criterias[j * 2 + 1];
+      const isWildcard = criteria === void 0 || criteria === '*';
+      let computedResult = false;
+
+      if (isWildcard) {
+        computedResult = true;
+      } else {
+        const tokenizedCriteria = parse(criteria + '');
+        const tokens = [createToken(valueToTest, TOKEN_TYPE_LITERAL)].concat(
+          tokenizedCriteria
+        );
+
+        computedResult = compute(tokens);
+      }
+
+      // Criterias are calculated as AND so any `false` breaks the loop as unmeet condition
+      if (!computedResult) {
+        isMetCondition = false;
+        break
+      }
+
+      isMetCondition = true;
+    }
+
+    if (isMetCondition) {
+      values.push(range[i]);
+    }
+  }
+  return values
+}
+
+function isDefined(arg) {
+  return arg !== undefined && arg !== null
 }
 
 const ERROR = {};
@@ -6408,7 +6108,7 @@ ERROR.TYPE = (error_val) => {
       return 3
     case ref:
       return 4
-    case esm_name:
+    case name:
       return 5
     case num:
       return 6
@@ -6420,20 +6120,6 @@ ERROR.TYPE = (error_val) => {
 
   return na
 };
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns information about the current operating environment.
- *
- * Category: Information
- *
- * @returns
- */
-function INFO() {
-  throw new Error('INFO is not implemented')
-}
 
 /**
  * Returns TRUE if the value is blank.
@@ -6457,7 +6143,7 @@ function ISBLANK(value) {
  */
 function ISERR(value$1) {
   return (
-    [value, ref, div0, num, esm_name, nil].indexOf(value$1) >= 0 ||
+    [value, ref, div0, num, name, nil].indexOf(value$1) >= 0 ||
     (typeof value$1 === 'number' && (isNaN(value$1) || !isFinite(value$1)))
   )
 }
@@ -6484,21 +6170,6 @@ function ISERROR(value) {
  */
 function ISEVEN(number) {
   return !(Math.floor(Math.abs(number)) & 1)
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns TRUE if there is a reference to a value that contains a formula.
- *
- * Category: Information
- *
- * @param {*} reference Reference is a reference to the value you want to test. Reference can be a value reference, a formula, or a name that refers to a value.
- * @returns
- */
-function ISFORMULA() {
-  throw new Error('ISFORMULA is not implemented')
 }
 
 /**
@@ -6561,21 +6232,6 @@ function ISODD(value) {
   return !!(Math.floor(Math.abs(value)) & 1)
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns TRUE if the value is a reference.
- *
- * Category: Information
- *
- * @param {*} value The value that you want tested. The value argument can be a blank (empty value), error, logical value, text, number, or reference value, or a name referring to any of these.
- * @returns
- */
-function ISREF() {
-  throw new Error('ISREF is not implemented')
-}
-
 /**
  * Returns TRUE if the value is text.
  *
@@ -6629,36 +6285,6 @@ function N(value) {
  */
 function NA() {
   return na
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the sheet number of the referenced sheet.
- *
- * Category: Information
- *
- * @param {*} value Optional. Value is the name of a sheet or a reference for which you want the sheet number. If value is omitted, SHEET returns the number of the sheet that contains the function.
- * @returns
- */
-function SHEET() {
-  throw new Error('SHEET is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the number of sheets in a reference.
- *
- * Category: Information
- *
- * @param {*} reference Optional. Reference is a reference for which you want to know the number of sheets it contains. If Reference is omitted, SHEETS returns the number of sheets in the workbook that contains the function.
- * @returns
- */
-function SHEETS() {
-  throw new Error('SHEETS is not implemented')
 }
 
 /**
@@ -6747,7 +6373,7 @@ function COLUMN(reference, index) {
     return undefined
   }
 
-  return jstat.col(reference, index)
+  return jStat.col(reference, index)
 }
 
 /**
@@ -6771,7 +6397,7 @@ function COLUMNS(array) {
     return 0
   }
 
-  return jstat.cols(array)
+  return jStat.cols(array)
 }
 
 /**
@@ -6782,7 +6408,7 @@ function COLUMNS(array) {
  * @param {*} lookup_value The value to be found in the first row of the table. Lookup_value can be a value, a reference, or a text string.
  * @param {*} table_array A table of information in which data is looked up. Use a reference to a range or a range name.
  * @param {*} row_index_num The row number in table_array from which the matching value will be returned. A row_index_num of 1 returns the first row value in table_array, a row_index_num of 2 returns the second row value in table_array, and so on. If row_index_num is less than 1, HLOOKUP returns the #VALUE! error value; if row_index_num is greater than the number of rows on table_array, HLOOKUP returns the #REF! error value.
- * @param {*} range_lookup Optional. A logical value that specifies whether you want HLOOKUP to find an exact match or an approximate match. If TRUE or omitted, an approximate match is returned. In other words, if an exact match is not found, the next largest value that is less than lookup_value is returned. If FALSE, HLOOKUP will find an exact match. If one is not found, the error value #N/A is returned.
+ * @param {*} [range_lookup] Optional. A logical value that specifies whether you want HLOOKUP to find an exact match or an approximate match. If TRUE or omitted, an approximate match is returned. In other words, if an exact match is not found, the next largest value that is less than lookup_value is returned. If FALSE, HLOOKUP will find an exact match. If one is not found, the error value #N/A is returned.
  * @returns
  */
 function HLOOKUP(lookup_value, table_array, row_index_num, range_lookup) {
@@ -6798,7 +6424,7 @@ function HLOOKUP(lookup_value, table_array, row_index_num, range_lookup) {
  - If array contains only one row or column, the corresponding row_num or column_num argument is optional.
  - If array has more than one row and more than one column, and only row_num or column_num is used, INDEX returns an array of the entire row or column in array.
  * @param {*} row_num Required, unless column_num is present. Selects the row in array from which to return a value. If row_num is omitted, column_num is required.
- * @param {*} column_num Optional. Selects the column in array from which to return a value. If column_num is omitted, row_num is required.
+ * @param {*} [column_num] Optional. Selects the column in array from which to return a value. If column_num is omitted, row_num is required.
  * @returns
  */
 function INDEX(array, row_num, column_num) {
@@ -6844,7 +6470,7 @@ function INDEX(array, row_num, column_num) {
  - If LOOKUP can't find the value of lookup_value, it uses the largest value in the array that is less than or equal to lookup_value.
  - If the value of lookup_value is smaller than the smallest value in the first row or column (depending on the array dimensions), LOOKUP returns the #N/A error value.
  * @param {*} array A range of values that contains text, numbers, or logical values that you want to compare with lookup_value. The array form of LOOKUP is very similar to the HLOOKUP and VLOOKUP functions. The difference is that HLOOKUP searches for the value of lookup_value in the first row, VLOOKUP searches in the first column, and LOOKUP searches according to the dimensions of array.
-* @param {*} result_array Optional. A range that contains only one row or column. The result_array argument must be the same size as lookup_value. It has to be the same size.
+* @param {*} [result_array] Optional. A range that contains only one row or column. The result_array argument must be the same size as lookup_value. It has to be the same size.
  * @returns
  */
 function LOOKUP(lookup_value, array, result_array) {
@@ -6877,11 +6503,11 @@ function LOOKUP(lookup_value, array, result_array) {
  *
  * @param {*} lookup_value The value that you want to match in lookup_array. For example, when you look up someone's number in a telephone book, you are using the person's name as the lookup value, but the telephone number is the value you want.The lookup_value argument can be a value (number, text, or logical value) or a value reference to a number, text, or logical value.
  * @param {*} lookup_array The range of values being searched.
- * @param {*} match_type Optional. The number -1, 0, or 1. The match_type argument specifies how Excel matches lookup_value with values in lookup_array. The default value for this argument is 1.
+ * @param {*} [match_type] Optional. The number -1, 0, or 1. The match_type argument specifies how Excel matches lookup_value with values in lookup_array. The default value for this argument is 1.
  * @returns
  */
 function MATCH(lookup_value, lookup_array, match_type) {
-  if (!lookup_value || !lookup_array) {
+  if ((!lookup_value && lookup_value !== 0) || !lookup_array) {
     return na
   }
 
@@ -6917,7 +6543,17 @@ function MATCH(lookup_value, lookup_array, match_type) {
       }
     } else if (match_type === 0) {
       if (typeof lookup_value === 'string' && typeof lookup_array[idx] === 'string') {
-        const lookupValueStr = lookup_value.toLowerCase().replace(/\?/g, '.').replace(/\*/g, '.*').replace(/~/g, '\\');
+        const lookupValueStr = lookup_value
+          .toLowerCase()
+          .replace(/\?/g, '.')
+          .replace(/\*/g, '.*')
+          .replace(/~/g, '\\')
+          .replace(/\+/g, '\\+')
+          .replace(/\(/g, '\\(')
+          .replace(/\)/g, '\\)')
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]');
+
         const regex = new RegExp('^' + lookupValueStr + '$');
 
         if (regex.test(lookup_array[idx].toLowerCase())) {
@@ -6967,7 +6603,7 @@ function ROWS(array) {
     return 0
   }
 
-  return jstat.rows(array)
+  return jStat.rows(array)
 }
 /**
  * Returns a sorted array of the elements in an array. The returned array is the same shape as the provided array argument.
@@ -6975,9 +6611,9 @@ function ROWS(array) {
  * Category: Lookup and reference
  *
  * @param {*} array Array to sort
- * @param {*} sort_index Optional. A number indicating the row or column to sort by
- * @param {*} sort_order Optional. A number indicating the desired sort order; 1 for ascending order (default), -1 for descending order
- * @param {*} by_col Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
+ * @param {*} [sort_index] Optional. A number indicating the row or column to sort by
+ * @param {*} [sort_order] Optional. A number indicating the desired sort order; 1 for ascending order (default), -1 for descending order
+ * @param {*} [by_col] Optional. A logical value indicating the desired sort direction; FALSE to sort by row (default), TRUE to sort by column
  * @returns
  */
 function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
@@ -7001,7 +6637,7 @@ function SORT(array, sort_index = 1, sort_order = 1, by_col = false) {
 
   by_col = parseBool(by_col);
   if (typeof by_col !== 'boolean') {
-    return esm_name
+    return name
   }
 
   const sortArray = (arr) =>
@@ -7081,7 +6717,7 @@ function UNIQUE() {
  * @param {*} lookup_value The value to be found in the first row of the table. Lookup_value can be a value, a reference, or a text string.
  * @param {*} table_array A table of information in which data is looked up. Use a reference to a range or a range name.
  * @param {*} col_index_num The row number in table_array from which the matching value will be returned. A row_index_num of 1 returns the first row value in table_array, a row_index_num of 2 returns the second row value in table_array, and so on. If row_index_num is less than 1, HLOOKUP returns the #VALUE! error value; if row_index_num is greater than the number of rows on table_array, HLOOKUP returns the #REF! error value.
- * @param {*} range_lookup Optional. A logical value that specifies whether you want HLOOKUP to find an exact match or an approximate match. If TRUE or omitted, an approximate match is returned. In other words, if an exact match is not found, the next largest value that is less than lookup_value is returned. If FALSE, HLOOKUP will find an exact match. If one is not found, the error value #N/A is returned.
+ * @param {*} [range_lookup] Optional. A logical value that specifies whether you want HLOOKUP to find an exact match or an approximate match. If TRUE or omitted, an approximate match is returned. In other words, if an exact match is not found, the next largest value that is less than lookup_value is returned. If FALSE, HLOOKUP will find an exact match. If one is not found, the error value #N/A is returned.
  * @returns
  */
 function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup) {
@@ -7090,30 +6726,761 @@ function VLOOKUP(lookup_value, table_array, col_index_num, range_lookup) {
   }
 
   range_lookup = !(range_lookup === 0 || range_lookup === false);
+
   let result = na;
-  const isNumberLookup = typeof lookup_value === 'number';
   let exactMatchOnly = false;
+
+  const isNumberLookup = typeof lookup_value === 'number';
+  const lookupValue = typeof lookup_value === 'string' ? lookup_value.toLowerCase() : lookup_value;
 
   for (let i = 0; i < table_array.length; i++) {
     const row = table_array[i];
+    const rowValue = typeof row[0] === 'string' ? row[0].toLowerCase() : row[0];
 
-    if (row[0] === lookup_value) {
+    if (rowValue === lookupValue) {
       result = col_index_num < row.length + 1 ? row[col_index_num - 1] : ref;
       break
     } else if (
       !exactMatchOnly &&
-      ((isNumberLookup && range_lookup && row[0] <= lookup_value) ||
-        (range_lookup && typeof row[0] === 'string' && row[0].localeCompare(lookup_value) < 0))
+      ((isNumberLookup && range_lookup && rowValue <= lookup_value) ||
+        (range_lookup && typeof rowValue === 'string' && rowValue.localeCompare(lookup_value) < 0))
     ) {
       result = col_index_num < row.length + 1 ? row[col_index_num - 1] : ref;
     }
 
-    if (isNumberLookup && row[0] > lookup_value) {
+    if (isNumberLookup && rowValue > lookup_value) {
       exactMatchOnly = true;
     }
   }
 
   return result
+}
+
+/**
+ * Returns the character specified by the code number.
+ *
+ * Category: Text
+ *
+ * @param {*} number A number between 1 and 255 specifying which character you want. The character is from the character set used by your computer. Note: Excel for the web supports only CHAR(9), CHAR(10), CHAR(13), and CHAR(32) and above.
+ * @returns
+ */
+function CHAR(number) {
+  number = parseNumber(number);
+
+  if (number === 0) {
+    return value
+  }
+
+  if (number instanceof Error) {
+    return number
+  }
+
+  return String.fromCharCode(number)
+}
+
+/**
+ * Removes all nonprintable characters from text.
+ *
+ * Category: Text
+ *
+ * @param {*} text Any worksheet information from which you want to remove nonprintable characters.
+ * @returns
+ */
+function CLEAN(text) {
+  if (anyIsError(text)) {
+    return text
+  }
+
+  text = text || '';
+  const re = /[\0-\x1F]/g;
+
+  return text.replace(re, '')
+}
+
+/**
+ * Returns a numeric code for the first character in a text string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text for which you want the code of the first character.
+ * @returns
+ */
+function CODE(text) {
+  if (anyIsError(text)) {
+    return text
+  }
+
+  text = text || '';
+  let result = text.charCodeAt(0);
+
+  if (isNaN(result)) {
+    result = value;
+  }
+
+  return result
+}
+
+/**
+ * Joins several text items into one text item.
+ *
+ * Category: Text
+ *
+ * @returns
+ */
+function CONCATENATE() {
+  const args = flatten(arguments);
+  const someError = anyError.apply(undefined, args);
+
+  if (someError) {
+    return someError
+  }
+
+  let trueFound = 0;
+
+  while ((trueFound = args.indexOf(true)) > -1) {
+    args[trueFound] = 'TRUE';
+  }
+
+  let falseFound = 0;
+
+  while ((falseFound = args.indexOf(false)) > -1) {
+    args[falseFound] = 'FALSE';
+  }
+
+  return args.join('')
+}
+
+const CONCAT = CONCATENATE;
+
+/**
+ * Converts a number to text, using the $ (dollar) currency format.
+ *
+ * Category: Text
+ *
+ * @param {*} number A number, a reference to a value containing a number, or a formula that evaluates to a number.
+ * @param {*} [decimals] Optional. The number of digits to the right of the decimal point. If this is negative, the number is rounded to the left of the decimal point. If you omit decimals, it is assumed to be 2.
+ * @returns
+ */
+function DOLLAR(number, decimals = 2) {
+  number = parseNumber(number);
+  if (isNaN(number)) {
+    return value
+  }
+
+  number = ROUND(number, decimals);
+
+  const options = {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals >= 0 ? decimals : 0,
+    maximumFractionDigits: decimals >= 0 ? decimals : 0
+  };
+
+  const formattedNumber = number.toLocaleString('en-US', options);
+
+  if (number < 0) {
+    return '$(' + formattedNumber.slice(2) + ')'
+  }
+
+  return formattedNumber
+}
+
+/**
+ * Checks to see if two text values are identical.
+ *
+ * Category: Text
+ *
+ * @param {*} text1 The first text string.
+ * @param {*} text2 The second text string.
+ * @returns
+ */
+function EXACT(text1, text2) {
+  if (arguments.length !== 2) {
+    return na
+  }
+
+  const someError = anyError(text1, text2);
+
+  if (someError) {
+    return someError
+  }
+
+  text1 = parseString(text1);
+  text2 = parseString(text2);
+
+  return text1 === text2
+}
+
+/**
+ * Locate one text string within a second text string, and return the number of the starting position of the first text string from the first character of the second text string.
+ *
+ * Category: Text
+ *
+ * @param {*} find_text The text you want to find.
+ * @param {*} within_text The text containing the text you want to find.
+ * @param {*} [start_num] Optional. Specifies the character at which to start the search. The first character in within_text is character number 1. If you omit start_num, it is assumed to be 1.
+ * @returns
+ */
+function FIND(find_text, within_text, start_num) {
+  if (arguments.length < 2) {
+    return na
+  }
+
+  find_text = parseString(find_text);
+  within_text = parseString(within_text);
+  start_num = start_num === undefined ? 0 : start_num;
+  const found_index = within_text.indexOf(find_text, start_num - 1);
+
+  if (found_index === -1) {
+    return value
+  }
+
+  return found_index + 1
+}
+
+/**
+ * Formats a number as text with a fixed number of decimals.
+ *
+ * Category: Text
+ *
+ * @param {*} number The number you want to round and convert to text.
+ * @param {*} [decimals] Optional. The number of digits to the right of the decimal point.
+ * @param {*} [no_commas] Optional. A logical value that, if TRUE, prevents FIXED from including commas in the returned text.
+ * @returns
+ */
+function FIXED(number, decimals = 2, no_commas = false) {
+  number = parseNumber(number);
+  if (isNaN(number)) {
+    return value
+  }
+
+  decimals = parseNumber(decimals);
+  if (isNaN(decimals)) {
+    return value
+  }
+
+  if (decimals < 0) {
+    const factor = Math.pow(10, -decimals);
+    number = Math.round(number / factor) * factor;
+  } else {
+    number = number.toFixed(decimals);
+  }
+
+  if (no_commas) {
+    number = number.toString().replace(/,/g, '');
+  } else {
+    const parts = number.toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+$)/g, ',');
+    number = parts.join('.');
+  }
+
+  return number
+}
+
+/**
+ * Returns the leftmost characters from a text value.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text string that contains the characters you want to extract.
+ * @param {*} [num_chars] Optional. Specifies the number of characters you want LEFT to extract.
+ * @returns
+ */
+function LEFT(text, num_chars) {
+  const someError = anyError(text, num_chars);
+
+  if (someError) {
+    return someError
+  }
+
+  text = parseString(text);
+  num_chars = num_chars === undefined ? 1 : num_chars;
+  num_chars = parseNumber(num_chars);
+
+  if (num_chars instanceof Error || typeof text !== 'string') {
+    return value
+  }
+
+  return text.substring(0, num_chars)
+}
+
+/**
+ * Returns the number of characters in a text string
+ *
+ * Category: Text
+ *
+ * @param {*} text The text whose length you want to find. Spaces count as characters.
+ * @returns
+ */
+function LEN(text) {
+  if (arguments.length === 0) {
+    return error
+  }
+
+  if (text instanceof Error) {
+    return text
+  }
+
+  if (Array.isArray(text)) {
+    return value
+  }
+
+  const textAsString = parseString(text);
+
+  return textAsString.length
+}
+
+/**
+ * Converts text to lowercase.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you want to convert to lowercase. LOWER does not change characters in text that are not letters.
+ * @returns
+ */
+function LOWER(text) {
+  if (arguments.length !== 1) {
+    return value
+  }
+
+  text = parseString(text);
+
+  if (anyIsError(text)) {
+    return text
+  }
+
+  return text.toLowerCase()
+}
+
+/**
+ * Returns a specific number of characters from a text string starting at the position you specify
+ *
+ * Category: Text
+ *
+ * @param {*} text The text string containing the characters you want to extract.
+ * @param {*} start_num The position of the first character you want to extract in text. The first character in text has start_num 1, and so on.
+ * @param {*} num_chars Specifies the number of characters you want MID to return from text.
+ * @returns
+ */
+function MID(text, start_num, num_chars) {
+  if (start_num === undefined || start_num === null) {
+    return value
+  }
+
+  start_num = parseNumber(start_num);
+  num_chars = parseNumber(num_chars);
+
+  if (anyIsError(start_num, num_chars) || typeof text !== 'string') {
+    return num_chars
+  }
+
+  const begin = start_num - 1;
+  const end = begin + num_chars;
+
+  return text.substring(begin, end)
+}
+
+// TODO
+/**
+ * Converts text to number in a locale-independent manner.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text to convert to a number.
+ * @param {*} [decimal_separator] Optional. The character used to separate the integer and fractional part of the result.
+ * @param {*} [group_separator] Optional. The character used to separate groupings of numbers, such as thousands from hundreds and millions from thousands.
+ * @returns
+ */
+function NUMBERVALUE(text, decimal_separator, group_separator) {
+  text = isDefined(text) ? text : '';
+
+  if (typeof text === 'number') {
+    return text
+  }
+
+  if (typeof text !== 'string') {
+    return na
+  }
+
+  decimal_separator = typeof decimal_separator === 'undefined' ? '.' : decimal_separator;
+  group_separator = typeof group_separator === 'undefined' ? ',' : group_separator;
+
+  return Number(text.replace(decimal_separator, '.').replace(group_separator, ''))
+}
+
+/**
+ * Capitalizes the first letter in each word of a text value.
+ *
+ * Category: Text
+ *
+ * @param {*} text Text enclosed in quotation marks, a formula that returns text, or a reference to a value containing the text you want to partially capitalize.
+ * @returns
+ */
+function PROPER(text) {
+  if (anyIsError(text)) {
+    return text
+  }
+
+  if (isNaN(text) && typeof text === 'number') {
+    return value
+  }
+
+  text = parseString(text);
+
+  return text.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
+}
+
+/**
+ * Replaces characters within text
+ *
+ * Category: Text
+ *
+ * @param {*} old_text Text in which you want to replace some characters.
+ * @param {*} num_chars The number of characters in old_text that you want REPLACE to replace with new_text.
+ * @param {*} length he number of characters in old_text that you want REPLACEB to replace with new_text.
+ * @param {*} new_text he text that will replace characters in old_text.
+ * @returns
+ */
+function REPLACE(old_text, num_chars, length, new_text) {
+  num_chars = parseNumber(num_chars);
+  length = parseNumber(length);
+
+  if (anyIsError(num_chars, length) || typeof old_text !== 'string' || typeof new_text !== 'string') {
+    return value
+  }
+
+  return old_text.substr(0, num_chars - 1) + new_text + old_text.substr(num_chars - 1 + length)
+}
+
+/**
+ * Repeats text a given number of times.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you want to repeat.
+ * @param {*} number_times A positive number specifying the number of times to repeat text.
+ * @returns
+ */
+function REPT(text, number_times) {
+  const someError = anyError(text, number_times);
+
+  if (someError) {
+    return someError
+  }
+
+  text = parseString(text);
+  number_times = parseNumber(number_times);
+
+  if (number_times instanceof Error) {
+    return number_times
+  }
+
+  return new Array(number_times + 1).join(text)
+}
+
+/**
+ * Returns the rightmost characters from a text value
+ *
+ * Category: Text
+ *
+ * @param {*} text The text string containing the characters you want to extract.
+ * @param {*} [num_chars] Optional. Specifies the number of characters you want RIGHT to extract.
+ * @returns
+ */
+function RIGHT(text, num_chars) {
+  const someError = anyError(text, num_chars);
+
+  if (someError) {
+    return someError
+  }
+
+  text = parseString(text);
+  num_chars = num_chars === undefined ? 1 : num_chars;
+  num_chars = parseNumber(num_chars);
+
+  if (num_chars instanceof Error) {
+    return num_chars
+  }
+
+  return text.substring(text.length - num_chars)
+}
+
+/**
+ * Finds one text value within another (not case-sensitive)
+ *
+ * Category: Text
+ *
+ * @param {*} find_text The text that you want to find.
+ * @param {*} within_text The text in which you want to search for the value of the find_text argument.
+ * @param {*} [start_num] Optional. The character number in the within_text argument at which you want to start searching.
+ * @returns
+ */
+function SEARCH(find_text, within_text, start_num) {
+  let foundAt;
+
+  if (typeof find_text !== 'string' || typeof within_text !== 'string') {
+    return value
+  }
+
+  start_num = start_num === undefined ? 0 : start_num;
+  foundAt = within_text.toLowerCase().indexOf(find_text.toLowerCase(), start_num - 1) + 1;
+
+  return foundAt === 0 ? value : foundAt
+}
+
+/**
+ * Substitutes new text for old text in a text string.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text or the reference to a value containing text for which you want to substitute characters.
+ * @param {*} old_text The text you want to replace.
+ * @param {*} new_text The text you want to replace old_text with.
+ * @param {*} [instance_num] Optional. Specifies which occurrence of old_text you want to replace with new_text. If you specify instance_num, only that instance of old_text is replaced. Otherwise, every occurrence of old_text in text is changed to new_text.
+ * @returns
+ */
+function SUBSTITUTE(text, old_text, new_text, instance_num) {
+  if (arguments.length < 3) {
+    return na
+  }
+
+  if (!text || !old_text) {
+    return text
+  } else if (instance_num === undefined) {
+    return text.split(old_text).join(new_text)
+  } else {
+    instance_num = Math.floor(Number(instance_num));
+
+    if (Number.isNaN(instance_num) || instance_num <= 0) {
+      return value
+    }
+
+    let index = 0;
+    let i = 0;
+
+    while (index > -1 && text.indexOf(old_text, index) > -1) {
+      index = text.indexOf(old_text, index + 1);
+      i++;
+
+      if (index > -1 && i === instance_num) {
+        return text.substring(0, index) + new_text + text.substring(index + old_text.length)
+      }
+    }
+
+    return text
+  }
+}
+
+/**
+ * Converts its arguments to text.
+ *
+ * Category: Text
+ *
+ * @param {*} value The value you want to test.
+ * @returns
+ */
+function T(value) {
+  if (value instanceof Error) {
+    return value
+  }
+
+  return typeof value === 'string' ? value : ''
+}
+
+/**
+ * Formats a number and converts it to text.
+ *
+ * Category: Text
+ *
+ * @param {*} value A numeric value that you want to be converted into text.
+ * @param {*} format_text A text string that defines the formatting that you want to be applied to the supplied value.
+ * @returns
+ */
+function TEXT(value$1, format_text) {
+  if (value$1 === undefined || value$1 instanceof Error || format_text instanceof Error) {
+    return na
+  }
+
+  if (value$1 instanceof Date) {
+    return value$1.toISOString().slice(0, 10)
+  }
+
+  if (format_text === undefined || format_text === null) {
+    return ''
+  }
+
+  if (typeof format_text === 'number') {
+    return String(format_text)
+  }
+
+  if (typeof format_text !== 'string') {
+    return value
+  }
+
+  const currencySymbol = format_text.startsWith('$') ? '$' : '';
+  const isPercent = format_text.endsWith('%');
+  format_text = format_text.replace(/%/g, '').replace(/\$/g, '');
+
+  // count all 0s after the decimal point
+  const decimalPlaces = format_text.includes('.') ? format_text.split('.')[1].match(/0/g).length : 0;
+
+  const noCommas = !format_text.includes(',');
+
+  if (isPercent) {
+    value$1 = value$1 * 100;
+  }
+
+  value$1 = FIXED(value$1, decimalPlaces, noCommas);
+
+  if (value$1.startsWith('-')) {
+    value$1 = value$1.replace('-', '');
+    value$1 = '-' + currencySymbol + value$1;
+  } else {
+    value$1 = currencySymbol + value$1;
+  }
+
+  if (isPercent) {
+    value$1 = value$1 + '%';
+  }
+
+  return value$1
+}
+
+/**
+ * Combines the text from multiple ranges and/or strings.
+ *
+ * Category: Text
+ * @param {*} delimiter A text string, either empty, or one or more characters enclosed by double quotes, or a reference to a valid text string. If a number is supplied, it will be treated as text.
+ * @param {*} ignore_empty If TRUE, ignores empty values.
+ * @param {*} args Text item to be joined. A text string, or array of strings, such as a range of values.
+ * @returns
+ */
+function TEXTJOIN(delimiter, ignore_empty, ...args) {
+  if (typeof ignore_empty !== 'boolean') {
+    ignore_empty = parseBool(ignore_empty);
+  }
+
+  if (arguments.length < 3) {
+    return na
+  }
+
+  delimiter = delimiter !== null && delimiter !== undefined ? delimiter : '';
+
+  let flatArgs = flatten(args);
+  let textToJoin = ignore_empty ? flatArgs.filter((text) => text) : flatArgs;
+
+  if (Array.isArray(delimiter)) {
+    delimiter = flatten(delimiter);
+
+    let chunks = textToJoin.map((item) => [item]);
+    let index = 0;
+
+    for (let i = 0; i < chunks.length - 1; i++) {
+      chunks[i].push(delimiter[index]);
+      index++;
+
+      if (index === delimiter.length) {
+        index = 0;
+      }
+    }
+
+    textToJoin = flatten(chunks);
+
+    return textToJoin.join('')
+  }
+
+  return textToJoin.join(delimiter)
+}
+
+/**
+ * Removes spaces from text.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text from which you want spaces removed.
+ * @returns
+ */
+function TRIM(text) {
+  text = parseString(text);
+
+  if (text instanceof Error) {
+    return text
+  }
+
+  return text.replace(/\s+/g, ' ').trim()
+}
+
+const UNICHAR = CHAR;
+
+const UNICODE = CODE;
+
+/**
+ * Converts text to uppercase.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text you want converted to uppercase. Text can be a reference or text string.
+ * @returns
+ */
+function UPPER(text) {
+  text = parseString(text);
+
+  if (text instanceof Error) {
+    return text
+  }
+
+  return text.toUpperCase()
+}
+
+/**
+ * Converts a text argument to a number.
+ *
+ * Category: Text
+ *
+ * @param {*} text The text enclosed in quotation marks or a reference to a value containing the text you want to convert.
+ * @returns
+ */
+function VALUE(text) {
+  const anyError$1 = anyError(text);
+
+  if (anyError$1) {
+    return anyError$1
+  }
+
+  if (typeof text === 'number') {
+    return text
+  }
+
+  if (!isDefined(text)) {
+    text = '';
+  }
+
+  if (typeof text !== 'string') {
+    return value
+  }
+
+  const isPercent = /(%)$/.test(text) || /^(%)/.test(text);
+  text = text.replace(/^[^0-9-]{0,3}/, '');
+  text = text.replace(/[^0-9]{0,3}$/, '');
+  text = text.replace(/[ ,]/g, '');
+
+  if (text === '') {
+    return 0
+  }
+
+  let output = Number(text);
+
+  if (isNaN(output)) {
+    return value
+  }
+
+  output = output || 0;
+
+  if (isPercent) {
+    output = output * 0.01;
+  }
+
+  return output
 }
 
 const SQRT2PI = 2.5066282746310002;
@@ -7140,7 +7507,7 @@ function AVEDEV() {
     return range
   }
 
-  return jstat.sum(jstat(range).subtract(jstat.mean(range)).abs()[0]) / range.length
+  return jStat.sum(jStat(range).subtract(jStat.mean(range)).abs()[0]) / range.length
 }
 
 /**
@@ -7167,6 +7534,7 @@ function AVERAGE() {
 
   const range = numbers(flatArgumentsDefined);
   const n = range.length;
+
   let sum = 0;
   let count = 0;
   let result;
@@ -7209,6 +7577,7 @@ function AVERAGEA() {
 
   const range = flatArgumentsDefined;
   const n = range.length;
+
   let sum = 0;
   let count = 0;
   let result;
@@ -7245,7 +7614,7 @@ function AVERAGEA() {
  *
  * @param {*} range One or more values to average, including numbers or names, arrays, or references that contain numbers.
  * @param {*} criteria The criteria in the form of a number, expression, value reference, or text that defines which values are averaged.
- * @param {*} average_range Optional. The actual set of values to average. If omitted, range is used.
+ * @param {*} [average_range] Optional. The actual set of values to average. If omitted, range is used.
  * @returns
  */
 function AVERAGEIF(range, criteria, average_range) {
@@ -7254,10 +7623,11 @@ function AVERAGEIF(range, criteria, average_range) {
   }
 
   average_range = average_range || range;
+
   const flatAverageRange = flatten(average_range);
   const flatAverageRangeDefined = flatAverageRange.filter(isDefined);
-  average_range = parseNumberArray(flatAverageRangeDefined);
 
+  average_range = parseNumberArray(flatAverageRangeDefined);
   range = flatten(range);
 
   if (average_range instanceof Error) {
@@ -7266,6 +7636,7 @@ function AVERAGEIF(range, criteria, average_range) {
 
   let average_count = 0;
   let result = 0;
+
   const isWildcard = criteria === void 0 || criteria === '*';
   const tokenizedCriteria = isWildcard ? null : parse(criteria + '');
 
@@ -7299,46 +7670,9 @@ function AVERAGEIF(range, criteria, average_range) {
 function AVERAGEIFS() {
   // Does not work with multi dimensional ranges yet!
   // http://office.microsoft.com/en-001/excel-help/averageifs-function-HA010047493.aspx
-  const args = argsToArray(arguments);
-  const criteriaLength = (args.length - 1) / 2;
-  const range = flatten(args[0]);
-  let count = 0;
-  let result = 0;
-
-  for (let i = 0; i < range.length; i++) {
-    let isMeetCondition = false;
-
-    for (let j = 0; j < criteriaLength; j++) {
-      const value = args[2 * j + 1][i];
-      const criteria = args[2 * j + 2];
-      const isWildcard = criteria === void 0 || criteria === '*';
-      let computedResult = false;
-
-      if (isWildcard) {
-        computedResult = true;
-      } else {
-        const tokenizedCriteria = parse(criteria + '');
-        const tokens = [createToken(value, TOKEN_TYPE_LITERAL)].concat(tokenizedCriteria);
-
-        computedResult = compute(tokens);
-      }
-
-      // Criterias are calculated as AND so any `false` breakes the loop as unmeet condition
-      if (!computedResult) {
-        isMeetCondition = false;
-        break
-      }
-
-      isMeetCondition = true;
-    }
-
-    if (isMeetCondition) {
-      result += range[i];
-      count++;
-    }
-  }
-
-  const average = result / count;
+  const values = applyCriteria(...arguments);
+  const result = values.reduce((acc, value) => acc + value, 0);
+  const average = result / values.length;
 
   return isNaN(average) ? 0 : average
 }
@@ -7354,8 +7688,8 @@ const BETA = {};
  * @param {*} alpha A parameter of the distribution.
  * @param {*} beta A parameter of the distribution.
  * @param {*} cumulative A logical value that determines the form of the function. If cumulative is TRUE, BETA.DIST returns the cumulative distribution function; if FALSE, it returns the probability density function.
- * @param {*} a Optional. A lower bound to the interval of x.
- * @param {*} b Optional. An upper bound to the interval of x.
+ * @param {*} [a] Optional. A lower bound to the interval of x.
+ * @param {*} [b] Optional. An upper bound to the interval of x.
  * @returns
  */
 BETA.DIST = function (x, alpha, beta, cumulative, a, b) {
@@ -7378,7 +7712,7 @@ BETA.DIST = function (x, alpha, beta, cumulative, a, b) {
 
   x = (x - a) / (b - a);
 
-  return cumulative ? jstat.beta.cdf(x, alpha, beta) : jstat.beta.pdf(x, alpha, beta)
+  return cumulative ? jStat.beta.cdf(x, alpha, beta) : jStat.beta.pdf(x, alpha, beta)
 };
 
 /**
@@ -7389,8 +7723,8 @@ BETA.DIST = function (x, alpha, beta, cumulative, a, b) {
  * @param {*} probability A probability associated with the beta distribution.
  * @param {*} alpha A parameter of the distribution.
  * @param {*} beta A parameter the distribution.
- * @param {*} a Optional. A lower bound to the interval of x.
- * @param {*} b Optional. An upper bound to the interval of x.
+ * @param {*} [a] Optional. A lower bound to the interval of x.
+ * @param {*} [b] Optional. An upper bound to the interval of x.
  * @returns
  */
 BETA.INV = (probability, alpha, beta, a, b) => {
@@ -7406,7 +7740,7 @@ BETA.INV = (probability, alpha, beta, a, b) => {
     return value
   }
 
-  return jstat.beta.inv(probability, alpha, beta) * (b - a) + a
+  return jStat.beta.inv(probability, alpha, beta) * (b - a) + a
 };
 
 const BINOM = {};
@@ -7433,8 +7767,8 @@ BINOM.DIST = (number_s, trials, probability_s, cumulative) => {
   }
 
   return cumulative
-    ? jstat.binomial.cdf(number_s, trials, probability_s)
-    : jstat.binomial.pdf(number_s, trials, probability_s)
+    ? jStat.binomial.cdf(number_s, trials, probability_s)
+    : jStat.binomial.pdf(number_s, trials, probability_s)
 };
 
 /**
@@ -7445,7 +7779,7 @@ BINOM.DIST = (number_s, trials, probability_s, cumulative) => {
  * @param {*} trials The number of independent trials. Must be greater than or equal to 0.
  * @param {*} probability_s The probability of success in each trial. Must be greater than or equal to 0 and less than or equal to 1.
  * @param {*} number_s The number of successes in trials. Must be greater than or equal to 0 and less than or equal to Trials.
- * @param {*} number_s2 Optional. If provided, returns the probability that the number of successful trials will fall between Number_s and number_s2. Must be greater than or equal to Number_s and less than or equal to Trials.
+ * @param {*} [number_s2] Optional. If provided, returns the probability that the number of successful trials will fall between Number_s and number_s2. Must be greater than or equal to Number_s and less than or equal to Trials.
  * @returns
  */
 BINOM.DIST.RANGE = (trials, probability_s, number_s, number_s2) => {
@@ -7491,7 +7825,7 @@ BINOM.INV = (trials, probability_s, alpha) => {
   let x = 0;
 
   while (x <= trials) {
-    if (jstat.binomial.cdf(x, trials, probability_s) >= alpha) {
+    if (jStat.binomial.cdf(x, trials, probability_s) >= alpha) {
       return x
     }
 
@@ -7519,7 +7853,7 @@ CHISQ.DIST = (x, deg_freedom, cumulative) => {
     return value
   }
 
-  return cumulative ? jstat.chisquare.cdf(x, deg_freedom) : jstat.chisquare.pdf(x, deg_freedom)
+  return cumulative ? jStat.chisquare.cdf(x, deg_freedom) : jStat.chisquare.pdf(x, deg_freedom)
 };
 
 /**
@@ -7544,7 +7878,7 @@ CHISQ.DIST.RT = (x, deg_freedom) => {
     return value
   }
 
-  return 1 - jstat.chisquare.cdf(x, deg_freedom)
+  return 1 - jStat.chisquare.cdf(x, deg_freedom)
 };
 
 /**
@@ -7564,7 +7898,7 @@ CHISQ.INV = (probability, deg_freedom) => {
     return value
   }
 
-  return jstat.chisquare.inv(probability, deg_freedom)
+  return jStat.chisquare.inv(probability, deg_freedom)
 };
 
 /**
@@ -7589,7 +7923,7 @@ CHISQ.INV.RT = (probability, deg_freedom) => {
     return value
   }
 
-  return jstat.chisquare.inv(1.0 - probability, deg_freedom)
+  return jStat.chisquare.inv(1.0 - probability, deg_freedom)
 };
 
 /**
@@ -7619,6 +7953,7 @@ CHISQ.TEST = function (actual_range, expected_range) {
   }
 
   const row = actual_range.length;
+
   let tmp, i, j;
 
   // Convert single-dimension array into two-dimension array
@@ -7626,12 +7961,14 @@ CHISQ.TEST = function (actual_range, expected_range) {
   for (i = 0; i < row; i++) {
     if (!(actual_range[i] instanceof Array)) {
       tmp = actual_range[i];
+
       actual_range[i] = [];
       actual_range[i].push(tmp);
     }
 
     if (!(expected_range[i] instanceof Array)) {
       tmp = expected_range[i];
+
       expected_range[i] = [];
       expected_range[i].push(tmp);
     }
@@ -7639,7 +7976,9 @@ CHISQ.TEST = function (actual_range, expected_range) {
 
   const col = actual_range[0].length;
   const dof = col === 1 ? row - 1 : (row - 1) * (col - 1);
+
   let xsqr = 0;
+
   const Pi = Math.PI;
 
   for (i = 0; i < row; i++) {
@@ -7699,7 +8038,7 @@ CONFIDENCE.NORM = (alpha, standard_dev, size) => {
     return value
   }
 
-  return jstat.normalci(1, alpha, standard_dev, size)[1] - 1
+  return jStat.normalci(1, alpha, standard_dev, size)[1] - 1
 };
 
 /**
@@ -7721,7 +8060,7 @@ CONFIDENCE.T = (alpha, standard_dev, size) => {
     return value
   }
 
-  return jstat.tci(1, alpha, standard_dev, size)[1] - 1
+  return jStat.tci(1, alpha, standard_dev, size)[1] - 1
 };
 
 /**
@@ -7741,7 +8080,7 @@ function CORREL(array1, array2) {
     return value
   }
 
-  return jstat.corrcoeff(array1, array2)
+  return jStat.corrcoeff(array1, array2)
 }
 
 /**
@@ -7782,6 +8121,7 @@ function COUNTA() {
  */
 function COUNTBLANK() {
   const range = flatten(arguments);
+
   let blanks = 0;
   let element;
 
@@ -7813,6 +8153,7 @@ function COUNTIF(range, criteria) {
   }
 
   let matches = 0;
+
   const tokenizedCriteria = parse(criteria + '');
 
   for (let i = 0; i < range.length; i++) {
@@ -7890,9 +8231,11 @@ COVARIANCE.P = (array1, array2) => {
     return value
   }
 
-  const mean1 = jstat.mean(array1);
-  const mean2 = jstat.mean(array2);
+  const mean1 = jStat.mean(array1);
+  const mean2 = jStat.mean(array2);
+
   let result = 0;
+
   const n = array1.length;
 
   for (let i = 0; i < n; i++) {
@@ -7919,7 +8262,7 @@ COVARIANCE.S = (array1, array2) => {
     return value
   }
 
-  return jstat.covariance(array1, array2)
+  return jStat.covariance(array1, array2)
 };
 
 /**
@@ -7937,7 +8280,8 @@ function DEVSQ() {
     return range
   }
 
-  const mean = jstat.mean(range);
+  const mean = jStat.mean(range);
+
   let result = 0;
 
   for (let i = 0; i < range.length; i++) {
@@ -7967,7 +8311,7 @@ EXPON.DIST = (x, lambda, cumulative) => {
     return value
   }
 
-  return cumulative ? jstat.exponential.cdf(x, lambda) : jstat.exponential.pdf(x, lambda)
+  return cumulative ? jStat.exponential.cdf(x, lambda) : jStat.exponential.pdf(x, lambda)
 };
 
 const F = {};
@@ -7993,8 +8337,8 @@ F.DIST = (x, deg_freedom1, deg_freedom2, cumulative) => {
   }
 
   return cumulative
-    ? jstat.centralF.cdf(x, deg_freedom1, deg_freedom2)
-    : jstat.centralF.pdf(x, deg_freedom1, deg_freedom2)
+    ? jStat.centralF.cdf(x, deg_freedom1, deg_freedom2)
+    : jStat.centralF.pdf(x, deg_freedom1, deg_freedom2)
 };
 
 /**
@@ -8020,7 +8364,7 @@ F.DIST.RT = function (x, deg_freedom1, deg_freedom2) {
     return value
   }
 
-  return 1 - jstat.centralF.cdf(x, deg_freedom1, deg_freedom2)
+  return 1 - jStat.centralF.cdf(x, deg_freedom1, deg_freedom2)
 };
 
 /**
@@ -8046,7 +8390,7 @@ F.INV = (probability, deg_freedom1, deg_freedom2) => {
     return num
   }
 
-  return jstat.centralF.inv(probability, deg_freedom1, deg_freedom2)
+  return jStat.centralF.inv(probability, deg_freedom1, deg_freedom2)
 };
 
 /**
@@ -8079,7 +8423,7 @@ F.INV.RT = function (probability, deg_freedom1, deg_freedom2) {
     return value
   }
 
-  return jstat.centralF.inv(1.0 - probability, deg_freedom1, deg_freedom2)
+  return jStat.centralF.inv(1.0 - probability, deg_freedom1, deg_freedom2)
 };
 
 /**
@@ -8179,9 +8523,11 @@ function FORECAST(x, known_ys, known_xs) {
     return value
   }
 
-  const xmean = jstat.mean(known_xs);
-  const ymean = jstat.mean(known_ys);
+  const xmean = jStat.mean(known_xs);
+  const ymean = jStat.mean(known_ys);
+
   const n = known_xs.length;
+
   let num = 0;
   let den = 0;
 
@@ -8263,7 +8609,7 @@ function GAMMA(number) {
     return num
   }
 
-  return jstat.gammafn(number)
+  return jStat.gammafn(number)
 }
 
 /**
@@ -8290,7 +8636,7 @@ GAMMA.DIST = function (value$1, alpha, beta, cumulative) {
     return value
   }
 
-  return cumulative ? jstat.gamma.cdf(value$1, alpha, beta, true) : jstat.gamma.pdf(value$1, alpha, beta, false)
+  return cumulative ? jStat.gamma.cdf(value$1, alpha, beta, true) : jStat.gamma.pdf(value$1, alpha, beta, false)
 };
 
 /**
@@ -8316,7 +8662,7 @@ GAMMA.INV = function (probability, alpha, beta) {
     return value
   }
 
-  return jstat.gamma.inv(probability, alpha, beta)
+  return jStat.gamma.inv(probability, alpha, beta)
 };
 
 /**
@@ -8334,7 +8680,7 @@ function GAMMALN(x) {
     return x
   }
 
-  return jstat.gammaln(x)
+  return jStat.gammaln(x)
 }
 
 /**
@@ -8358,7 +8704,7 @@ GAMMALN.PRECISE = function (x) {
     return value
   }
 
-  return jstat.gammaln(x)
+  return jStat.gammaln(x)
 };
 
 /**
@@ -8376,7 +8722,7 @@ function GAUSS(z) {
     return z
   }
 
-  return jstat.normal.cdf(z, 0, 1) - 0.5
+  return jStat.normal.cdf(z, 0, 1) - 0.5
 }
 
 /**
@@ -8394,7 +8740,7 @@ function GEOMEAN() {
     return args
   }
 
-  return jstat.geomean(args)
+  return jStat.geomean(args)
 }
 
 /**
@@ -8406,21 +8752,21 @@ function GEOMEAN() {
  - If the array known_y's is in a single column, then each column of known_x's is interpreted as a separate variable.
  - If the array known_y's is in a single row, then each row of known_x's is interpreted as a separate variable.
  - If any of the numbers in known_y's is 0 or negative, GROWTH returns the #NUM! error value.
- * @param {*} known_x Optional. An optional set of x-values that you may already know in the relationship y = b*m^x.
+ * @param {*} [known_x] Optional. An optional set of x-values that you may already know in the relationship y = b*m^x.
  - The array known_x's can include one or more sets of variables. If only one variable is used, known_y's and known_x's can be ranges of any shape, as long as they have equal dimensions. If more than one variable is used, known_y's must be a vector (that is, a range with a height of one row or a width of one column).
  - If known_x's is omitted, it is assumed to be the array {1,2,3,...} that is the same size as known_y's.
- * @param {*} new_x Optional. Are new x-values for which you want GROWTH to return corresponding y-values.
+ * @param {*} [new_x] Optional. Are new x-values for which you want GROWTH to return corresponding y-values.
  - new_x's must include a column (or row) for each independent variable, just as known_x's does. So, if known_y's is in a single column, known_x's and new_x's must have the same number of columns. If known_y's is in a single row, known_x's and new_x's must have the same number of rows.
  - If new_x's is omitted, it is assumed to be the same as known_x's.
  - If both known_x's and new_x's are omitted, they are assumed to be the array {1,2,3,...} that is the same size as known_y's.
- * @param {*} use_const Optional. A logical value specifying whether to force the constant b to equal 1. If const is TRUE or omitted, b is calculated normally. If const is FALSE, b is set equal to 1 and the m-values are adjusted so that y = m^x.
+ * @param {*} [use_const] Optional. A logical value specifying whether to force the constant b to equal 1. If const is TRUE or omitted, b is calculated normally. If const is FALSE, b is set equal to 1 and the m-values are adjusted so that y = m^x.
  - If const is TRUE or omitted, b is calculated normally.
  - If const is FALSE, b is set equal to 1 and the m-values are adjusted so that y = m^x.
  * @returns
  */
 function GROWTH(known_y, known_x, new_x, use_const) {
   // Credits: Ilmari Karonen (http://stackoverflow.com/questions/14161990/how-to-implement-growth-function-in-javascript)
-  known_y = parseNumberArray(known_y);
+  known_y = parseNumberArray(flatten(known_y));
 
   if (known_y instanceof Error) {
     return known_y
@@ -8438,15 +8784,11 @@ function GROWTH(known_y, known_x, new_x, use_const) {
   }
 
   if (new_x === undefined) {
-    new_x = [];
-
-    for (i = 1; i <= known_y.length; i++) {
-      new_x.push(i);
-    }
+    new_x = known_x;
   }
 
-  known_x = parseNumberArray(known_x);
-  new_x = parseNumberArray(new_x);
+  known_x = parseNumberArray(flatten(known_x));
+  new_x = parseNumberArray(flatten(new_x));
 
   if (anyIsError(known_x, new_x)) {
     return value
@@ -8458,6 +8800,7 @@ function GROWTH(known_y, known_x, new_x, use_const) {
 
   // Calculate sums over the data:
   const n = known_y.length;
+
   let avg_x = 0;
   let avg_y = 0;
   let avg_xy = 0;
@@ -8466,6 +8809,7 @@ function GROWTH(known_y, known_x, new_x, use_const) {
   for (i = 0; i < n; i++) {
     const x = known_x[i];
     const y = Math.log(known_y[i]);
+
     avg_x += x;
     avg_y += y;
     avg_xy += x * y;
@@ -8515,6 +8859,7 @@ function HARMEAN() {
   }
 
   const n = range.length;
+
   let den = 0;
 
   for (let i = 0; i < n; i++) {
@@ -8606,15 +8951,16 @@ function KURT() {
     return range
   }
 
-  const mean = jstat.mean(range);
+  const mean = jStat.mean(range);
   const n = range.length;
+
   let sigma = 0;
 
   for (let i = 0; i < n; i++) {
     sigma += Math.pow(range[i] - mean, 4);
   }
 
-  sigma = sigma / Math.pow(jstat.stdev(range, true), 4);
+  sigma = sigma / Math.pow(jStat.stdev(range, true), 4);
 
   return ((n * (n + 1)) / ((n - 1) * (n - 2) * (n - 3))) * sigma - (3 * (n - 1) * (n - 1)) / ((n - 2) * (n - 3))
 }
@@ -8629,12 +8975,18 @@ function KURT() {
  * @returns
  */
 function LARGE(array, k) {
-  array = parseNumberArray(flatten(array));
-  k = parseNumber(k);
+  const someError = anyError.apply(undefined, array);
 
-  if (anyIsError(array, k)) {
-    return array
+  if (someError) {
+    return someError
   }
+
+  if (anyIsError(k)) {
+    return k
+  }
+
+  array = numbers(flatten(array));
+  k = parseNumber(k);
 
   if (k < 0 || array.length < k) {
     return value
@@ -8651,7 +9003,7 @@ function LARGE(array, k) {
  * @param {*} known_y The set of y-values that you already know in the relationship y = mx + b.
  - If the range of known_y's is in a single column, each column of known_x's is interpreted as a separate variable.
  - If the range of known_y's is contained in a single row, each row of known_x's is interpreted as a separate variable.
- * @param {*} known_x Optional. A set of x-values that you may already know in the relationship y = mx + b.
+ * @param {*} [known_x] Optional. A set of x-values that you may already know in the relationship y = mx + b.
  - The range of known_x's can include one or more sets of variables. If only one variable is used, known_y's and known_x's can be ranges of any shape, as long as they have equal dimensions. If more than one variable is used, known_y's must be a vector (that is, a range with a height of one row or a width of one column).
  - If known_x's is omitted, it is assumed to be the array {1,2,3,...} that is the same size as known_y's.
  * @returns
@@ -8664,9 +9016,10 @@ function LINEST(known_y, known_x) {
     return value
   }
 
-  const ymean = jstat.mean(known_y);
-  const xmean = jstat.mean(known_x);
+  const ymean = jStat.mean(known_y);
+  const xmean = jStat.mean(known_x);
   const n = known_x.length;
+
   let num = 0;
   let den = 0;
 
@@ -8693,7 +9046,7 @@ function LINEST(known_y, known_x) {
  * @param {*} known_y The set of y-values you already know in the relationship y = b*m^x.
  - If the array known_y's is in a single column, then each column of known_x's is interpreted as a separate variable.
  - If the array known_y's is in a single row, then each row of known_x's is interpreted as a separate variable.
- * @param {*} known_x Optional. An optional set of x-values that you may already know in the relationship y = b*m^x.
+ * @param {*} [known_x] Optional. An optional set of x-values that you may already know in the relationship y = b*m^x.
  - The array known_x's can include one or more sets of variables. If only one variable is used, known_y's and known_x's can be ranges of any shape, as long as they have equal dimensions. If more than one variable is used, known_y's must be a range of values with a height of one row or a width of one column (which is also known as a vector).
  - If known_x's is omitted, it is assumed to be the array {1,2,3,...} that is the same size as known_y's.
  * @returns
@@ -8715,6 +9068,7 @@ function LOGEST(known_y, known_x) {
   }
 
   const result = LINEST(known_y, known_x);
+
   result[0] = Math.round(Math.exp(result[0]) * 1000000) / 1000000;
   result[1] = Math.round(Math.exp(result[1]) * 1000000) / 1000000;
 
@@ -8743,7 +9097,7 @@ LOGNORM.DIST = (x, mean, standard_dev, cumulative) => {
     return value
   }
 
-  return cumulative ? jstat.lognormal.cdf(x, mean, standard_dev) : jstat.lognormal.pdf(x, mean, standard_dev)
+  return cumulative ? jStat.lognormal.cdf(x, mean, standard_dev) : jStat.lognormal.pdf(x, mean, standard_dev)
 };
 
 /**
@@ -8765,7 +9119,7 @@ LOGNORM.INV = (probability, mean, standard_dev) => {
     return value
   }
 
-  return jstat.lognormal.inv(probability, mean, standard_dev)
+  return jStat.lognormal.inv(probability, mean, standard_dev)
 };
 
 /**
@@ -8806,9 +9160,23 @@ function MAXA() {
   }
 
   let range = arrayValuesToNumbers(flatArguments);
+
   range = range.map((value) => (value === undefined || value === null ? 0 : value));
 
   return range.length === 0 ? 0 : Math.max.apply(Math, range)
+}
+
+/**
+ * Returns the maximum of all values in a range that meet multiple criteria.
+ *
+ * Category: Statistical
+ *
+ * @returns
+ */
+function MAXIFS() {
+  const values = applyCriteria(...arguments);
+
+  return values.length === 0 ? 0 : Math.max.apply(Math, values)
 }
 
 /**
@@ -8828,7 +9196,8 @@ function MEDIAN() {
   }
 
   const range = arrayValuesToNumbers(flatArguments);
-  let result = jstat.median(range);
+
+  let result = jStat.median(range);
 
   if (isNaN(result)) {
     result = num;
@@ -8875,9 +9244,23 @@ function MINA() {
   }
 
   let range = arrayValuesToNumbers(flatArguments);
+
   range = range.map((value) => (value === undefined || value === null ? 0 : value));
 
   return range.length === 0 ? 0 : Math.min.apply(Math, range)
+}
+
+/**
+ * Returns the minimum of all values in a range that meet multiple criteria.
+ *
+ * Category: Statistical
+ *
+ * @returns
+ */
+function MINIFS() {
+  const values = applyCriteria(...arguments);
+
+  return values.length === 0 ? 0 : Math.min.apply(Math, values)
 }
 
 const MODE = {};
@@ -8900,6 +9283,7 @@ MODE.MULT = function () {
 
   const n = range.length;
   const count = {};
+
   let maxItems = [];
   let max = 0;
   let currentItem;
@@ -8962,8 +9346,8 @@ NEGBINOM.DIST = (number_f, number_s, probability_s, cumulative) => {
   }
 
   return cumulative
-    ? jstat.negbin.cdf(number_f, number_s, probability_s)
-    : jstat.negbin.pdf(number_f, number_s, probability_s)
+    ? jStat.negbin.cdf(number_f, number_s, probability_s)
+    : jStat.negbin.pdf(number_f, number_s, probability_s)
 };
 
 const NORM = {};
@@ -8993,7 +9377,7 @@ NORM.DIST = (x, mean, standard_dev, cumulative) => {
   }
 
   // Return normal distribution computed by jStat [http://jstat.org]
-  return cumulative ? jstat.normal.cdf(x, mean, standard_dev) : jstat.normal.pdf(x, mean, standard_dev)
+  return cumulative ? jStat.normal.cdf(x, mean, standard_dev) : jStat.normal.pdf(x, mean, standard_dev)
 };
 
 /**
@@ -9015,7 +9399,7 @@ NORM.INV = (probability, mean, standard_dev) => {
     return value
   }
 
-  return jstat.normal.inv(probability, mean, standard_dev)
+  return jStat.normal.inv(probability, mean, standard_dev)
 };
 
 NORM.S = {};
@@ -9036,7 +9420,7 @@ NORM.S.DIST = (z, cumulative) => {
     return value
   }
 
-  return cumulative ? jstat.normal.cdf(z, 0, 1) : jstat.normal.pdf(z, 0, 1)
+  return cumulative ? jStat.normal.cdf(z, 0, 1) : jStat.normal.pdf(z, 0, 1)
 };
 
 /**
@@ -9054,7 +9438,7 @@ NORM.S.INV = (probability) => {
     return value
   }
 
-  return jstat.normal.inv(probability, 0, 1)
+  return jStat.normal.inv(probability, 0, 1)
 };
 
 /**
@@ -9074,9 +9458,10 @@ function PEARSON(array1, array2) {
     return value
   }
 
-  const xmean = jstat.mean(array1);
-  const ymean = jstat.mean(array2);
+  const xmean = jStat.mean(array1);
+  const ymean = jStat.mean(array2);
   const n = array1.length;
+
   let num = 0;
   let den1 = 0;
   let den2 = 0;
@@ -9108,6 +9493,7 @@ PERCENTILE.EXC = (array, k) => {
   }
 
   array = array.sort((a, b) => a - b);
+
   const n = array.length;
 
   if (k < 1 / (n + 1) || k > 1 - 1 / (n + 1)) {
@@ -9138,6 +9524,7 @@ PERCENTILE.INC = (array, k) => {
   }
 
   array = array.sort((a, b) => a - b);
+
   const n = array.length;
   const l = k * (n - 1);
   const fl = Math.floor(l);
@@ -9154,7 +9541,7 @@ const PERCENTRANK = {};
  *
  * @param {*} array The array or range of data with numeric values that defines relative standing
  * @param {*} x The value for which you want to know the rank.
- * @param {*} significance Optional. A value that identifies the number of significant digits for the returned percentage value. If omitted, PERCENTRANK.EXC uses three digits (0.xxx).
+ * @param {*} [significance] Optional. A value that identifies the number of significant digits for the returned percentage value. If omitted, PERCENTRANK.EXC uses three digits (0.xxx).
  * @returns
  */
 PERCENTRANK.EXC = (array, x, significance) => {
@@ -9168,10 +9555,12 @@ PERCENTRANK.EXC = (array, x, significance) => {
   }
 
   array = array.sort((a, b) => a - b);
+
   const uniques = UNIQUE.apply(null, array);
   const n = array.length;
   const m = uniques.length;
   const power = Math.pow(10, significance);
+
   let result = 0;
   let match = false;
   let i = 0;
@@ -9198,7 +9587,7 @@ PERCENTRANK.EXC = (array, x, significance) => {
  *
  * @param {*} array The array or range of data with numeric values that defines relative standing.
  * @param {*} x The value for which you want to know the rank.
- * @param {*} significance Optional. A value that identifies the number of significant digits for the returned percentage value. If omitted, PERCENTRANK.INC uses three digits (0.xxx).
+ * @param {*} [significance] Optional. A value that identifies the number of significant digits for the returned percentage value. If omitted, PERCENTRANK.INC uses three digits (0.xxx).
  * @returns
  */
 PERCENTRANK.INC = (array, x, significance) => {
@@ -9212,10 +9601,12 @@ PERCENTRANK.INC = (array, x, significance) => {
   }
 
   array = array.sort((a, b) => a - b);
+
   const uniques = UNIQUE.apply(null, array);
   const n = array.length;
   const m = uniques.length;
   const power = Math.pow(10, significance);
+
   let result = 0;
   let match = false;
   let i = 0;
@@ -9313,7 +9704,7 @@ POISSON.DIST = (x, mean, cumulative) => {
     return value
   }
 
-  return cumulative ? jstat.poisson.cdf(x, mean) : jstat.poisson.pdf(x, mean)
+  return cumulative ? jStat.poisson.cdf(x, mean) : jStat.poisson.pdf(x, mean)
 };
 
 /**
@@ -9323,8 +9714,8 @@ POISSON.DIST = (x, mean, cumulative) => {
  *
  * @param {*} x_range The range of numeric values of x with which there are associated probabilities.
  * @param {*} prob_range A set of probabilities associated with values in x_range.
- * @param {*} lower_limit Optional. The lower bound on the value for which you want a probability.
- * @param {*} upper_limit Optional. The optional upper bound on the value for which you want a probability.
+ * @param {*} [lower_limit] Optional. The lower bound on the value for which you want a probability.
+ * @param {*} [upper_limit] Optional. The optional upper bound on the value for which you want a probability.
  * @returns
  */
 function PROB(x_range, prob_range, lower_limit, upper_limit) {
@@ -9349,6 +9740,7 @@ function PROB(x_range, prob_range, lower_limit, upper_limit) {
 
   const sorted = x_range.sort((a, b) => a - b);
   const n = sorted.length;
+
   let result = 0;
 
   for (let i = 0; i < n; i++) {
@@ -9372,7 +9764,7 @@ const QUARTILE = {};
  * @returns
  */
 QUARTILE.EXC = (range, quart) => {
-  range = parseNumberArray(flatten(range));
+  range = parseNumberArray(numbers(flatten(range)));
   quart = parseNumber(quart);
 
   if (anyIsError(range, quart)) {
@@ -9401,7 +9793,7 @@ QUARTILE.EXC = (range, quart) => {
  * @returns
  */
 QUARTILE.INC = (range, quart) => {
-  range = parseNumberArray(flatten(range));
+  range = parseNumberArray(numbers(flatten(range)));
   quart = parseNumber(quart);
 
   if (anyIsError(range, quart)) {
@@ -9429,7 +9821,7 @@ const RANK = {};
  *
  * @param {*} number The number whose rank you want to find.
  * @param {*} ref An array of, or a reference to, a list of numbers. Nonnumeric values in Ref are ignored.
- * @param {*} order Optional. A number specifying how to rank number.
+ * @param {*} [order] Optional. A number specifying how to rank number.
  * @returns
  */
 RANK.AVG = (number, ref, order) => {
@@ -9442,10 +9834,13 @@ RANK.AVG = (number, ref, order) => {
 
   ref = flatten(ref);
   order = order || false;
+
   const sort = order ? (a, b) => a - b : (a, b) => b - a;
+
   ref = ref.sort(sort);
 
   const length = ref.length;
+
   let count = 0;
 
   for (let i = 0; i < length; i++) {
@@ -9464,7 +9859,7 @@ RANK.AVG = (number, ref, order) => {
  *
  * @param {*} number The number whose rank you want to find.
  * @param {*} ref An array of, or a reference to, a list of numbers. Non-numeric values in Ref are ignored.
- * @param {*} order Optional. A number specifying how to rank number.
+ * @param {*} [order] Optional. A number specifying how to rank number.
  * @returns
  */
 RANK.EQ = (number, ref, order) => {
@@ -9476,7 +9871,9 @@ RANK.EQ = (number, ref, order) => {
   }
 
   order = order || false;
+
   const sort = order ? (a, b) => a - b : (a, b) => b - a;
+
   ref = ref.sort(sort);
 
   return ref.indexOf(number) + 1
@@ -9508,7 +9905,7 @@ function ROW(reference, index) {
     return undefined
   }
 
-  return jstat.row(reference, index)
+  return jStat.row(reference, index)
 }
 
 /**
@@ -9547,15 +9944,16 @@ function SKEW() {
     return range
   }
 
-  const mean = jstat.mean(range);
+  const mean = jStat.mean(range);
   const n = range.length;
+
   let sigma = 0;
 
   for (let i = 0; i < n; i++) {
     sigma += Math.pow(range[i] - mean, 3);
   }
 
-  return (n * sigma) / ((n - 1) * (n - 2) * Math.pow(jstat.stdev(range, true), 3))
+  return (n * sigma) / ((n - 1) * (n - 2) * Math.pow(jStat.stdev(range, true), 3))
 }
 
 /**
@@ -9572,8 +9970,9 @@ SKEW.P = function () {
     return range
   }
 
-  const mean = jstat.mean(range);
+  const mean = jStat.mean(range);
   const n = range.length;
+
   let m2 = 0;
   let m3 = 0;
 
@@ -9605,9 +10004,10 @@ function SLOPE(known_y, known_x) {
     return value
   }
 
-  const xmean = jstat.mean(known_x);
-  const ymean = jstat.mean(known_y);
+  const xmean = jStat.mean(known_x);
+  const ymean = jStat.mean(known_y);
   const n = known_x.length;
+
   let num = 0;
   let den = 0;
 
@@ -9673,6 +10073,7 @@ const STDEV = {};
  */
 STDEV.P = function () {
   const v = VAR.P.apply(this, arguments);
+
   let result = Math.sqrt(v);
 
   if (isNaN(result)) {
@@ -9722,6 +10123,7 @@ function STDEVA() {
  */
 function STDEVPA() {
   const v = VARPA.apply(this, arguments);
+
   let result = Math.sqrt(v);
 
   if (isNaN(result)) {
@@ -9748,9 +10150,10 @@ function STEYX(known_y, known_x) {
     return value
   }
 
-  const xmean = jstat.mean(known_x);
-  const ymean = jstat.mean(known_y);
+  const xmean = jStat.mean(known_x);
+  const ymean = jStat.mean(known_y);
   const n = known_x.length;
+
   let lft = 0;
   let num = 0;
   let den = 0;
@@ -9764,8 +10167,6 @@ function STEYX(known_y, known_x) {
   return Math.sqrt((lft - (num * num) / den) / (n - 2))
 }
 
-const T$1 = {};
-
 /**
  * Returns the Percentage Points (probability) for the Student t-distribution.
  *
@@ -9776,12 +10177,12 @@ const T$1 = {};
  * @param {*} cumulative A logical value that determines the form of the function. If cumulative is TRUE, T.DIST returns the cumulative distribution function; if FALSE, it returns the probability density function.
  * @returns
  */
-T$1.DIST = (x, deg_freedom, cumulative) => {
+T.DIST = (x, deg_freedom, cumulative) => {
   if (cumulative !== 1 && cumulative !== 2) {
     return num
   }
 
-  return cumulative === 1 ? T$1.DIST.RT(x, deg_freedom) : T$1.DIST['2T'](x, deg_freedom)
+  return cumulative === 1 ? T.DIST.RT(x, deg_freedom) : T.DIST['2T'](x, deg_freedom)
 };
 
 /**
@@ -9793,7 +10194,7 @@ T$1.DIST = (x, deg_freedom, cumulative) => {
  * @param {*} deg_freedom An integer indicating the number of degrees of freedom.
  * @returns
  */
-T$1.DIST['2T'] = function (x, deg_freedom) {
+T.DIST['2T'] = function (x, deg_freedom) {
   if (arguments.length !== 2) {
     return na
   }
@@ -9806,7 +10207,7 @@ T$1.DIST['2T'] = function (x, deg_freedom) {
     return value
   }
 
-  return (1 - jstat.studentt.cdf(x, deg_freedom)) * 2
+  return (1 - jStat.studentt.cdf(x, deg_freedom)) * 2
 };
 
 /**
@@ -9818,7 +10219,7 @@ T$1.DIST['2T'] = function (x, deg_freedom) {
  * @param {*} deg_freedom An integer indicating the number of degrees of freedom.
  * @returns
  */
-T$1.DIST.RT = function (x, deg_freedom) {
+T.DIST.RT = function (x, deg_freedom) {
   if (arguments.length !== 2) {
     return na
   }
@@ -9831,7 +10232,7 @@ T$1.DIST.RT = function (x, deg_freedom) {
     return value
   }
 
-  return 1 - jstat.studentt.cdf(x, deg_freedom)
+  return 1 - jStat.studentt.cdf(x, deg_freedom)
 };
 
 /**
@@ -9843,7 +10244,7 @@ T$1.DIST.RT = function (x, deg_freedom) {
  * @param {*} deg_freedom The number of degrees of freedom with which to characterize the distribution.
  * @returns
  */
-T$1.INV = (probability, deg_freedom) => {
+T.INV = (probability, deg_freedom) => {
   probability = parseNumber(probability);
   deg_freedom = parseNumber(deg_freedom);
 
@@ -9851,7 +10252,7 @@ T$1.INV = (probability, deg_freedom) => {
     return value
   }
 
-  return jstat.studentt.inv(probability, deg_freedom)
+  return jStat.studentt.inv(probability, deg_freedom)
 };
 
 /**
@@ -9863,7 +10264,7 @@ T$1.INV = (probability, deg_freedom) => {
  * @param {*} deg_freedom The number of degrees of freedom with which to characterize the distribution.
  * @returns
  */
-T$1.INV['2T'] = (probability, deg_freedom) => {
+T.INV['2T'] = (probability, deg_freedom) => {
   probability = parseNumber(probability);
   deg_freedom = parseNumber(deg_freedom);
 
@@ -9875,7 +10276,7 @@ T$1.INV['2T'] = (probability, deg_freedom) => {
     return value
   }
 
-  return Math.abs(jstat.studentt.inv(probability / 2, deg_freedom))
+  return Math.abs(jStat.studentt.inv(probability / 2, deg_freedom))
 };
 
 // The algorithm can be found here:
@@ -9889,7 +10290,7 @@ T$1.INV['2T'] = (probability, deg_freedom) => {
  * @param {*} array2 The second data set.
  * @returns
  */
-T$1.TEST = (array1, array2) => {
+T.TEST = (array1, array2) => {
   array1 = parseNumberArray(flatten(array1));
   array2 = parseNumberArray(flatten(array2));
 
@@ -9897,8 +10298,9 @@ T$1.TEST = (array1, array2) => {
     return value
   }
 
-  const mean_x = jstat.mean(array1);
-  const mean_y = jstat.mean(array2);
+  const mean_x = jStat.mean(array1);
+  const mean_y = jStat.mean(array2);
+
   let s_x = 0;
   let s_y = 0;
   let i;
@@ -9916,7 +10318,7 @@ T$1.TEST = (array1, array2) => {
 
   const t = Math.abs(mean_x - mean_y) / Math.sqrt(s_x / array1.length + s_y / array2.length);
 
-  return T$1.DIST['2T'](t, array1.length + array2.length - 2)
+  return T.DIST['2T'](t, array1.length + array2.length - 2)
 };
 
 /**
@@ -9926,7 +10328,7 @@ T$1.TEST = (array1, array2) => {
  *
  * @param {*} known_ys The set of y-values you already know in the relationship y = mx + b
  * @param {*} known_xs An optional set of x-values that you may already know in the relationship y = mx + b
- * @param {*} new_xs Optional. New x-values for which you want TREND to return corresponding y-values.
+ * @param {*} [new_xs] Optional. New x-values for which you want TREND to return corresponding y-values.
  * @returns
  */
 function TREND(known_ys, known_xs, new_xs) {
@@ -9969,7 +10371,7 @@ function TRIMMEAN(range, percent) {
 
   const trim = FLOOR(range.length * percent, 2) / 2;
 
-  return jstat.mean(
+  return jStat.mean(
     initial(
       rest(
         range.sort((a, b) => a - b),
@@ -9993,8 +10395,11 @@ const VAR = {};
 VAR.P = function () {
   const range = numbers(flatten(arguments));
   const n = range.length;
+
   let sigma = 0;
+
   const mean = AVERAGE(range);
+
   let result;
 
   for (let i = 0; i < n; i++) {
@@ -10021,7 +10426,9 @@ VAR.P = function () {
 VAR.S = function () {
   const range = numbers(flatten(arguments));
   const n = range.length;
+
   let sigma = 0;
+
   const mean = AVERAGE(range);
 
   for (let i = 0; i < n; i++) {
@@ -10042,8 +10449,10 @@ VAR.S = function () {
 function VARA() {
   const range = flatten(arguments);
   const n = range.length;
+
   let sigma = 0;
   let count = 0;
+
   const mean = AVERAGEA(range);
 
   for (let i = 0; i < n; i++) {
@@ -10076,9 +10485,12 @@ function VARA() {
 function VARPA() {
   const range = flatten(arguments);
   const n = range.length;
+
   let sigma = 0;
   let count = 0;
+
   const mean = AVERAGEA(range);
+
   let result;
 
   for (let i = 0; i < n; i++) {
@@ -10142,7 +10554,7 @@ const Z = {};
  *
  * @param {*} array The array or range of data against which to test x.
  * @param {*} x The value to test.
- * @param {*} sigma Optional. The population (known) standard deviation. If omitted, the sample standard deviation is used.
+ * @param {*} [sigma] Optional. The population (known) standard deviation. If omitted, the sample standard deviation is used.
  * @returns
  */
 Z.TEST = (array, x, sigma) => {
@@ -10154,6 +10566,7 @@ Z.TEST = (array, x, sigma) => {
   }
 
   sigma = sigma || STDEV.S(array);
+
   const n = array.length;
 
   return 1 - NORM.S.DIST((AVERAGE(array) - x) / (sigma / Math.sqrt(n)), true)
@@ -10280,7 +10693,7 @@ function ACOTH(number) {
  * @param {*} function_num A number 1 to 19 that specifies which function to use.
  * @param {*} options A numerical value that determines which values to ignore in the evaluation range for the function. Note: The function will not ignore hidden rows, nested subtotals or nested aggregates if the array argument includes a calculation, for example: =AGGREGATE(14,3,A1:A100*(A1:A100>0),1)
  * @param {*} ref1 The first numeric argument for functions that take multiple numeric arguments for which you want the aggregate value.
- * @param {*} ref2 Optional. Numeric arguments 2 to 253 for which you want the aggregate value. For functions that take an array, ref1 is an array, an array formula, or a reference to a range of values for which you want the aggregate value. Ref2 is a second argument that is required for certain functions.
+ * @param {*} [ref2] Optional. Numeric arguments 2 to 253 for which you want the aggregate value. For functions that take an array, ref1 is an array, an array formula, or a reference to a range of values for which you want the aggregate value. Ref2 is a second argument that is required for certain functions.
  * @returns
  */
 function AGGREGATE(function_num, options, ref1, ref2) {
@@ -10489,7 +10902,7 @@ function ATANH(number) {
  *
  * @param {*} number The number that you want to convert. Must be an integer greater than or equal to 0 and less than 2^53.
  * @param {*} radix The base radix that you want to convert the number into. Must be an integer greater than or equal to 2 and less than or equal to 36.
- * @param {*} min_length Optional. The minimum length of the returned string. Must be an integer greater than or equal to 0.
+ * @param {*} [min_length] Optional. The minimum length of the returned string. Must be an integer greater than or equal to 0.
  * @returns
  */
 function BASE(number, radix, min_length) {
@@ -10518,13 +10931,49 @@ function BASE(number, radix, min_length) {
  *
  * @param {*} number The value you want to round.
  * @param {*} significance The multiple to which you want to round.
- * @param {*} mode Optional. For negative numbers, controls whether Number is rounded toward or away from zero.
+ * @param {*} [mode] Optional. For negative numbers, controls whether Number is rounded toward or away from zero.
  * @returns
  */
-function CEILING(number, significance, mode) {
+function CEILING(number, significance) {
+  number = parseNumber(number);
+  significance = parseNumber(significance);
+
+  const anyError$1 = anyError(number, significance);
+
+  if (anyError$1) {
+    return anyError$1
+  }
+
+  if (significance === 0) {
+    return 0
+  }
+
+  if (number > 0 && significance < 0) {
+    return num
+  }
+
+  return Math.ceil(number / significance) * significance
+}
+
+/**
+ * Rounds a number up, to the nearest integer or to the nearest multiple of significance.
+ *
+ * Category: Math and trigonometry
+ *
+ * @param {*} number The value you want to round.
+ * @param {*} [significance] Optional. This is the number of significant digits after the decimal point to which number is to be rounded.
+ * @param {*} [mode] Optional. For negative numbers, controls whether Number is rounded toward or away from zero.
+ * @returns
+ */
+CEILING.MATH = (number, significance, mode = 0) => {
+  if (significance === undefined) {
+    significance = number > 0 ? 1 : -1;
+  }
+
   number = parseNumber(number);
   significance = parseNumber(significance);
   mode = parseNumber(mode);
+
   const anyError$1 = anyError(number, significance, mode);
 
   if (anyError$1) {
@@ -10536,22 +10985,28 @@ function CEILING(number, significance, mode) {
   }
 
   significance = Math.abs(significance);
-  const precision = -Math.floor(Math.log(significance) / Math.log(10));
 
-  if (number >= 0) {
-    return ROUND(Math.ceil(number / significance) * significance, precision)
+  if (mode === 0) {
+    return Math.ceil(number / significance) * significance
   } else {
-    if (mode === 0) {
-      return -ROUND(Math.floor(Math.abs(number) / significance) * significance, precision)
-    } else {
-      return -ROUND(Math.ceil(Math.abs(number) / significance) * significance, precision)
-    }
+    return number > 0
+      ? Math.ceil(number / significance) * significance
+      : Math.floor(number / significance) * significance
   }
-}
+};
 
-CEILING.MATH = CEILING;
-
-CEILING.PRECISE = CEILING;
+/**
+ * Rounds a number up, to the nearest integer or to the nearest multiple of significance.
+ *
+ * Category: Math and trigonometry
+ *
+ * @param {*} number The value you want to round.
+ * @param {*} [significance] Optional. This is the number of significant digits after the decimal point to which number is to be rounded.
+ * @returns
+ */
+CEILING.PRECISE = (number, significance) => {
+  return CEILING.MATH(number, significance)
+};
 
 /**
  * Returns the number of combinations for a given number of objects.
@@ -10739,11 +11194,11 @@ function CSCH(number) {
  * @returns
  */
 function DECIMAL(text, radix) {
-  if (arguments.length < 1) {
-    return value
+  if (arguments.length < 2) {
+    return na
   }
 
-  text = parseNumber(text);
+  text = text || '0';
   radix = parseNumber(radix);
   const anyError$1 = anyError(text, radix);
 
@@ -10755,7 +11210,13 @@ function DECIMAL(text, radix) {
     return num
   }
 
-  return parseInt(text, radix)
+  const result = parseInt(text, radix);
+
+  if (isNaN(result)) {
+    return num
+  }
+
+  return result
 }
 
 /**
@@ -10791,7 +11252,7 @@ function EVEN(number) {
     return number
   }
 
-  return CEILING(number, -2, -1)
+  return CEILING.MATH(number, -2, -1)
 }
 
 /**
@@ -10883,26 +11344,22 @@ function FACTDOUBLE(number) {
 function FLOOR(number, significance) {
   number = parseNumber(number);
   significance = parseNumber(significance);
+
   const anyError$1 = anyError(number, significance);
 
   if (anyError$1) {
     return anyError$1
   }
 
-  if (significance === 0) {
-    return 0
+  if (!significance) {
+    return div0
   }
 
-  if (!(number >= 0 && significance > 0) && !(number <= 0 && significance < 0)) {
+  if (number > 0 && significance < 0) {
     return num
   }
 
-  significance = Math.abs(significance);
-  const precision = -Math.floor(Math.log(significance) / Math.log(10));
-
-  return number >= 0
-    ? ROUND(Math.floor(number / significance) * significance, precision)
-    : -ROUND(Math.ceil(Math.abs(number) / significance), precision)
+  return Math.floor(number / significance) * significance
 }
 
 // TODO: Verify
@@ -10913,20 +11370,15 @@ function FLOOR(number, significance) {
  * Category: Math and trigonometry
  *
  * @param {*} number The number to be rounded down.
- * @param {*} significance Optional. The multiple to which you want to round.
- * @param {*} mode Optional. The direction (toward or away from 0) to round negative numbers.
+ * @param {*} [significance] Optional. The multiple to which you want to round.
+ * @param {*} [mode] Optional. The direction (toward or away from 0) to round negative numbers.
  * @returns
  */
-FLOOR.MATH = (number, significance, mode) => {
-  if (significance instanceof Error) {
-    return significance
-  }
-
-  significance = significance === undefined ? 0 : significance;
-
+FLOOR.MATH = (number, significance = 1, mode = 0) => {
   number = parseNumber(number);
   significance = parseNumber(significance);
   mode = parseNumber(mode);
+
   const anyError$1 = anyError(number, significance, mode);
 
   if (anyError$1) {
@@ -10937,16 +11389,15 @@ FLOOR.MATH = (number, significance, mode) => {
     return 0
   }
 
-  significance = significance ? Math.abs(significance) : 1;
-  const precision = -Math.floor(Math.log(significance) / Math.log(10));
+  significance = Math.abs(significance);
 
-  if (number >= 0) {
-    return ROUND(Math.floor(number / significance) * significance, precision)
-  } else if (mode === 0 || mode === undefined) {
-    return -ROUND(Math.ceil(Math.abs(number) / significance) * significance, precision)
+  if (mode === 0) {
+    return Math.floor(number / significance) * significance
+  } else {
+    return number > 0
+      ? Math.floor(number / significance) * significance
+      : Math.ceil(number / significance) * significance
   }
-
-  return -ROUND(Math.floor(Math.abs(number) / significance) * significance, precision)
 };
 
 // Deprecated
@@ -10957,10 +11408,12 @@ FLOOR.MATH = (number, significance, mode) => {
  * Category: Math and trigonometry
  *
  * @param {*} number The value to be rounded.
- * @param {*} significance Optional. The multiple to which number is to be rounded. If significance is omitted, its default value is 1.
+ * @param {*} [significance] Optional. The multiple to which number is to be rounded. If significance is omitted, its default value is 1.
  * @returns
  */
-FLOOR.PRECISE = FLOOR['MATH'];
+FLOOR.PRECISE = (number, significance) => {
+  return FLOOR.MATH(number, significance)
+};
 
 // adapted http://rosettacode.org/wiki/Greatest_common_divisor#JavaScript
 /**
@@ -11092,14 +11545,13 @@ function LN(number) {
  * Category: Math and trigonometry
  *
  * @param {*} number The positive real number for which you want the logarithm.
- * @param {*} base Optional. The base of the logarithm. If base is omitted, it is assumed to be 10.
+ * @param {*} [base] Optional. The base of the logarithm. If base is omitted, it is assumed to be 10.
  * @returns
  */
 function LOG(number, base) {
   number = parseNumber(number);
-  base = parseNumber(base);
+  base = base ? parseNumber(base) : 10;
   const anyError$1 = anyError(number, base);
-
   if (anyError$1) {
     return anyError$1
   }
@@ -11846,7 +12298,7 @@ function SUM() {
  *
  * @param {*} range The range of values that you want evaluated by criteria. Cells in each range must be numbers or names, arrays, or references that contain numbers. Blank and text values are ignored.
  * @param {*} criteria The criteria in the form of a number, expression, a value reference, text, or a function that defines which values will be added.
- * @param {*} sum_range Optional. The actual values to add, if you want to add values other than those specified in the range argument. If the sum_range argument is omitted, Excel adds the values that are specified in the range argument (the same values to which the criteria is applied). Sum_range should be the same size and shape as range. If it isn't, performance may suffer, and the formula will sum a range of values that starts with the first value in sum_range but has the same dimensions as range.
+ * @param {*} [sum_range] Optional. The actual values to add, if you want to add values other than those specified in the range argument. If the sum_range argument is omitted, Excel adds the values that are specified in the range argument (the same values to which the criteria is applied). Sum_range should be the same size and shape as range. If it isn't, performance may suffer, and the formula will sum a range of values that starts with the first value in sum_range but has the same dimensions as range.
  * @returns
  */
 function SUMIF(range, criteria, sum_range) {
@@ -11890,57 +12342,8 @@ function SUMIF(range, criteria, sum_range) {
  * @returns
  */
 function SUMIFS() {
-  const args = argsToArray(arguments);
-  const range = parseNumberArray(flatten(args.shift()));
-
-  if (range instanceof Error) {
-    return range
-  }
-
-  const criterias = args;
-  const criteriaLength = criterias.length / 2;
-
-  for (let i = 0; i < criteriaLength; i++) {
-    criterias[i * 2] = flatten(criterias[i * 2]);
-  }
-
-  let result = 0;
-
-  for (let i = 0; i < range.length; i++) {
-    let isMeetCondition = false;
-
-    for (let j = 0; j < criteriaLength; j++) {
-      const valueToTest = criterias[j * 2][i];
-      const criteria = criterias[j * 2 + 1];
-      const isWildcard = criteria === void 0 || criteria === '*';
-      let computedResult = false;
-
-      if (isWildcard) {
-        computedResult = true;
-      } else {
-        const tokenizedCriteria = parse(criteria + '');
-        const tokens = [createToken(valueToTest, TOKEN_TYPE_LITERAL)].concat(
-          tokenizedCriteria
-        );
-
-        computedResult = compute(tokens);
-      }
-
-      // Criterias are calculated as AND so any `false` breakes the loop as unmeet condition
-      if (!computedResult) {
-        isMeetCondition = false;
-        break
-      }
-
-      isMeetCondition = true;
-    }
-
-    if (isMeetCondition) {
-      result += range[i];
-    }
-  }
-
-  return result
+  const values = applyCriteria(...arguments);
+  return SUM(values)
 }
 
 /**
@@ -12162,7 +12565,7 @@ function TANH(number) {
  * Category: Math and trigonometry
  *
  * @param {*} number The number you want to truncate.
- * @param {*} num_digits Optional. A number specifying the precision of the truncation. The default value for num_digits is 0 (zero).
+ * @param {*} [num_digits] Optional. A number specifying the precision of the truncation. The default value for num_digits is 0 (zero).
  * @returns
  */
 function TRUNC(number, num_digits) {
@@ -12496,7 +12899,6 @@ var symbols = /*#__PURE__*/Object.freeze({
   POW: POW
 });
 
-const d1900 = new Date(Date.UTC(1900, 0, 1));
 const WEEK_STARTS = [
   undefined,
   0,
@@ -12586,7 +12988,7 @@ function DATE(year, month, day) {
     }
   }
 
-  return result
+  return returnSerial ? dateToSerial(result) : result
 }
 
 /**
@@ -12692,7 +13094,9 @@ function DATEVALUE(date_text) {
     return value
   }
 
-  return new Date(date_text)
+  const dateValue = new Date(date_text);
+
+  return returnSerial ? dateToSerial(dateValue) : dateValue
 }
 
 /**
@@ -12741,7 +13145,7 @@ function DAYS(end_date, start_date) {
     return start_date
   }
 
-  return serial(startOfDay(end_date)) - serial(startOfDay(start_date))
+  return dateToSerial(startOfDay(end_date)) - dateToSerial(startOfDay(start_date))
 }
 
 /**
@@ -12751,7 +13155,7 @@ function DAYS(end_date, start_date) {
  *
  * @param {*} start_date A date that represents the start date. If start_date occurs after end_date, the DAYS360 function returns a negative number.
  * @param {*} end_date A date that represents the end date.
- * @param {*} method Optional. A logical value that specifies whether to use the U.S. or European method in the calculation.
+ * @param {*} [method] Optional. A logical value that specifies whether to use the U.S. or European method in the calculation.
  * @returns
  */
 function DAYS360(start_date, end_date, method) {
@@ -12818,10 +13222,30 @@ function EDATE(start_date, months) {
     return value
   }
 
+  // store the day and temporarily set to 1, which is safe
+  let storedDay = start_date.getDate();
+  start_date.setDate(1);
+
   months = parseInt(months, 10);
   start_date.setMonth(start_date.getMonth() + months);
 
-  return start_date
+  let targetMonth = start_date.getMonth();
+
+  // if storedDay > 28 then we need to check end-of-month scenarios
+  if (storedDay > 28) {
+    let daysInTargetMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][targetMonth];
+
+    // if target month is February, check for a leap year
+    let targetYear = start_date.getFullYear();
+    if (targetMonth === 1 && ((targetYear % 4 === 0 && targetYear % 100 !== 0) || targetYear % 400 === 0)) {
+      daysInTargetMonth = 29;
+    }
+    storedDay = Math.min(storedDay, daysInTargetMonth);
+  }
+
+  start_date.setDate(storedDay);
+
+  return returnSerial ? dateToSerial(start_date) : start_date
 }
 
 /**
@@ -12846,7 +13270,9 @@ function EOMONTH(start_date, months) {
 
   months = parseInt(months, 10);
 
-  return new Date(start_date.getFullYear(), start_date.getMonth() + months + 1, 0)
+  const eoMonth = new Date(start_date.getFullYear(), start_date.getMonth() + months + 1, 0);
+
+  return returnSerial ? dateToSerial(eoMonth) : eoMonth
 }
 
 /**
@@ -12932,7 +13358,7 @@ function MONTH(serial_number) {
  *
  * @param {*} start_date A date that represents the start date.
  * @param {*} end_date A date that represents the end date.
- * @param {*} holidays Optional. An optional range of one or more dates to exclude from the working calendar, such as state and federal holidays and floating holidays. The list can be either a range of values that contains the dates or an array constant of the serial numbers that represent the dates.
+ * @param {*} [holidays] Optional. An optional range of one or more dates to exclude from the working calendar, such as state and federal holidays and floating holidays. The list can be either a range of values that contains the dates or an array constant of the serial numbers that represent the dates.
  * @returns
  */
 function NETWORKDAYS(start_date, end_date, holidays) {
@@ -12946,8 +13372,8 @@ function NETWORKDAYS(start_date, end_date, holidays) {
  *
  * @param {*} start_date The date for from which the difference is to be computed. The start_date can be earlier than, the same as, or later than the end_date.
  * @param {*} end_date The date for to which the difference is to be computed.
- * @param {*} weekend Optional. Indicates the days of the week that are weekend days and are not included in the number of whole working days between start_date and end_date. Weekend is a weekend number or string that specifies when weekends occur. Weekend number values indicate the following weekend days:
- * @param {*} holidays Optional. An optional set of one or more dates that are to be excluded from the working day calendar. holidays shall be a range of values that contain the dates, or an array constant of the serial values that represent those dates. The ordering of dates or serial values in holidays can be arbitrary.
+ * @param {*} [weekend] Optional. Indicates the days of the week that are weekend days and are not included in the number of whole working days between start_date and end_date. Weekend is a weekend number or string that specifies when weekends occur. Weekend number values indicate the following weekend days:
+ * @param {*} [holidays] Optional. An optional set of one or more dates that are to be excluded from the working day calendar. holidays shall be a range of values that contain the dates, or an array constant of the serial values that represent those dates. The ordering of dates or serial values in holidays can be arbitrary.
  * @returns
  */
 NETWORKDAYS.INTL = (start_date, end_date, weekend, holidays) => {
@@ -13042,7 +13468,7 @@ NETWORKDAYS.INTL = (start_date, end_date, weekend, holidays) => {
  * @returns
  */
 function NOW() {
-  return new Date()
+  return returnSerial ? dateToSerial(new Date()) : new Date()
 }
 
 /**
@@ -13115,7 +13541,8 @@ function TIMEVALUE(time_text) {
  * @returns
  */
 function TODAY() {
-  return startOfDay(new Date())
+  const today = startOfDay(new Date());
+  return returnSerial ? dateToSerial(today) : today
 }
 
 /**
@@ -13124,7 +13551,7 @@ function TODAY() {
  * Category: Date and time
  *
  * @param {*} serial_number A sequential number that represents the date of the day you are trying to find.
- * @param {*} return_type Optional. A number that determines the type of return value.
+ * @param {*} [return_type] Optional. A number that determines the type of return value.
  * @returns
  */
 function WEEKDAY(serial_number, return_type) {
@@ -13149,7 +13576,7 @@ function WEEKDAY(serial_number, return_type) {
  * Category: Date and time
  *
  * @param {*} serial_number A date within the week.
- * @param {*} return_type Optional. A number that determines on which day the week begins. The default is 1.
+ * @param {*} [return_type] Optional. A number that determines on which day the week begins. The default is 1.
  * @returns
  */
 function WEEKNUM(serial_number, return_type) {
@@ -13182,7 +13609,7 @@ function WEEKNUM(serial_number, return_type) {
  *
  * @param {*} start_date A date that represents the start date.
  * @param {*} days The number of nonweekend and nonholiday days before or after start_date. A positive value for days yields a future date; a negative value yields a past date.
- * @param {*} holidays Optional. An optional list of one or more dates to exclude from the working calendar, such as state and federal holidays and floating holidays. The list can be either a range of values that contain the dates or an array constant of the serial numbers that represent the dates.
+ * @param {*} [holidays] Optional. An optional list of one or more dates to exclude from the working calendar, such as state and federal holidays and floating holidays. The list can be either a range of values that contain the dates or an array constant of the serial numbers that represent the dates.
  * @returns
  */
 function WORKDAY(start_date, days, holidays) {
@@ -13196,8 +13623,8 @@ function WORKDAY(start_date, days, holidays) {
  *
  * @param {*} start_date The start date, truncated to integer.
  * @param {*} days The number of workdays before or after the start_date. A positive value yields a future date; a negative value yields a past date; a zero value yields the start_date. Day-offset is truncated to an integer.
- * @param {*} weekend Optional. Indicates the days of the week that are weekend days and are not considered working days. Weekend is a weekend number or string that specifies when weekends occur. Weekend number values indicate the following weekend days:
- * @param {*} holidays Optional. An optional set of one or more dates that are to be excluded from the working day calendar. Holidays shall be a range of values that contain the dates, or an array constant of the serial values that represent those dates. The ordering of dates or serial values in holidays can be arbitrary.
+ * @param {*} [weekend] Optional. Indicates the days of the week that are weekend days and are not considered working days. Weekend is a weekend number or string that specifies when weekends occur. Weekend number values indicate the following weekend days:
+ * @param {*} [holidays] Optional. An optional set of one or more dates that are to be excluded from the working day calendar. Holidays shall be a range of values that contain the dates, or an array constant of the serial values that represent those dates. The ordering of dates or serial values in holidays can be arbitrary.
  * @returns
  */
 WORKDAY.INTL = (start_date, days, weekend, holidays) => {
@@ -13211,10 +13638,6 @@ WORKDAY.INTL = (start_date, days, weekend, holidays) => {
 
   if (days instanceof Error) {
     return days
-  }
-
-  if (days < 0) {
-    return num
   }
 
   if (weekend === undefined) {
@@ -13245,8 +13668,11 @@ WORKDAY.INTL = (start_date, days, weekend, holidays) => {
 
   let d = 0;
 
-  while (d < days) {
-    start_date.setDate(start_date.getDate() + 1);
+  const sign = Math.sign(days);
+
+  while (d < days * sign) {
+    start_date.setDate(start_date.getDate() + sign);
+
     const day = start_date.getDay();
 
     if (day === weekend[0] || day === weekend[1]) {
@@ -13267,6 +13693,11 @@ WORKDAY.INTL = (start_date, days, weekend, holidays) => {
     }
 
     d++;
+  }
+
+  // EXCEL does not recognize dates before 1900.
+  if (start_date.getFullYear() < 1900) {
+    return value
   }
 
   return start_date
@@ -13306,7 +13737,7 @@ function daysBetween(start_date, end_date) {
  *
  * @param {*} start_date A date that represents the start date.
  * @param {*} end_date A date that represents the end date.
- * @param {*} basis Optional. The type of day count basis to use.
+ * @param {*} [basis] Optional. The type of day count basis to use.
  * @returns
  */
 function YEARFRAC(start_date, end_date, basis) {
@@ -13389,788 +13820,6 @@ function YEARFRAC(start_date, end_date, basis) {
 
       return (ed + em * 30 + ey * 360 - (sd + sm * 30 + sy * 360)) / 360
   }
-}
-
-function serial(date) {
-  const addOn = date > -2203891200000 ? 2 : 1;
-
-  return Math.ceil((date - d1900) / 86400000) + addOn
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Changes full-width (double-byte) English letters or katakana within a character string to half-width (single-byte) characters.
- *
- * Category: Text
- *
- * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any full-width letters, text is not changed.
- * @returns
- */
-function ASC() {
-  throw new Error('ASC is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Converts a number to text, using the ß (baht) currency format.
- *
- * Category: Text
- *
- * @param {*} number A number you want to convert to text, or a reference to a value containing a number, or a formula that evaluates to a number.
- * @returns
- */
-function BAHTTEXT() {
-  throw new Error('BAHTTEXT is not implemented')
-}
-
-/**
- * Returns the character specified by the code number.
- *
- * Category: Text
- *
- * @param {*} number A number between 1 and 255 specifying which character you want. The character is from the character set used by your computer. Note: Excel for the web supports only CHAR(9), CHAR(10), CHAR(13), and CHAR(32) and above.
- * @returns
- */
-function CHAR(number) {
-  number = parseNumber(number);
-
-  if (number === 0) {
-    return value
-  }
-
-  if (number instanceof Error) {
-    return number
-  }
-
-  return String.fromCharCode(number)
-}
-
-/**
- * Removes all nonprintable characters from text.
- *
- * Category: Text
- *
- * @param {*} text Any worksheet information from which you want to remove nonprintable characters.
- * @returns
- */
-function CLEAN(text) {
-  if (anyIsError(text)) {
-    return text
-  }
-
-  text = text || '';
-  const re = /[\0-\x1F]/g;
-
-  return text.replace(re, '')
-}
-
-/**
- * Returns a numeric code for the first character in a text string.
- *
- * Category: Text
- *
- * @param {*} text The text for which you want the code of the first character.
- * @returns
- */
-function CODE(text) {
-  if (anyIsError(text)) {
-    return text
-  }
-
-  text = text || '';
-  let result = text.charCodeAt(0);
-
-  if (isNaN(result)) {
-    result = value;
-  }
-
-  return result
-}
-
-/**
- * Joins several text items into one text item.
- *
- * Category: Text
- *
- * @returns
- */
-function CONCATENATE() {
-  const args = flatten(arguments);
-  const someError = anyError.apply(undefined, args);
-
-  if (someError) {
-    return someError
-  }
-
-  let trueFound = 0;
-
-  while ((trueFound = args.indexOf(true)) > -1) {
-    args[trueFound] = 'TRUE';
-  }
-
-  let falseFound = 0;
-
-  while ((falseFound = args.indexOf(false)) > -1) {
-    args[falseFound] = 'FALSE';
-  }
-
-  return args.join('')
-}
-
-const CONCAT = CONCATENATE;
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Changes half-width (single-byte) English letters or katakana within a character string to full-width (double-byte) characters.
- *
- * Category: Text
- *
- * @param {*} text The text or a reference to a value that contains the text you want to change. If text does not contain any half-width English letters or katakana, text is not changed.
- * @returns
- */
-function DBCS() {
-  throw new Error('DBCS is not implemented')
-}
-
-/**
- * Converts a number to text, using the $ (dollar) currency format.
- *
- * Category: Text
- *
- * @param {*} number A number, a reference to a value containing a number, or a formula that evaluates to a number.
- * @param {*} decimals Optional. The number of digits to the right of the decimal point. If this is negative, the number is rounded to the left of the decimal point. If you omit decimals, it is assumed to be 2.
- * @returns
- */
-function DOLLAR(number, decimals = 2) {
-  number = parseNumber(number);
-  if (isNaN(number)) {
-    return value
-  }
-
-  number = ROUND(number, decimals);
-
-  const options = {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: decimals >= 0 ? decimals : 0,
-    maximumFractionDigits: decimals >= 0 ? decimals : 0
-  };
-
-  const formattedNumber = number.toLocaleString('en-US', options);
-
-  if (number < 0) {
-    return '$(' + formattedNumber.slice(2) + ')'
-  }
-
-  return formattedNumber
-}
-
-/**
- * Checks to see if two text values are identical.
- *
- * Category: Text
- *
- * @param {*} text1 The first text string.
- * @param {*} text2 The second text string.
- * @returns
- */
-function EXACT(text1, text2) {
-  if (arguments.length !== 2) {
-    return na
-  }
-
-  const someError = anyError(text1, text2);
-
-  if (someError) {
-    return someError
-  }
-
-  text1 = parseString(text1);
-  text2 = parseString(text2);
-
-  return text1 === text2
-}
-
-/**
- * Locate one text string within a second text string, and return the number of the starting position of the first text string from the first character of the second text string.
- *
- * Category: Text
- *
- * @param {*} find_text The text you want to find.
- * @param {*} within_text The text containing the text you want to find.
- * @param {*} start_num Optional. Specifies the character at which to start the search. The first character in within_text is character number 1. If you omit start_num, it is assumed to be 1.
- * @returns
- */
-function FIND(find_text, within_text, start_num) {
-  if (arguments.length < 2) {
-    return na
-  }
-
-  find_text = parseString(find_text);
-  within_text = parseString(within_text);
-  start_num = start_num === undefined ? 0 : start_num;
-  const found_index = within_text.indexOf(find_text, start_num - 1);
-
-  if (found_index === -1) {
-    return value
-  }
-
-  return found_index + 1
-}
-
-/**
- * Formats a number as text with a fixed number of decimals.
- *
- * Category: Text
- *
- * @param {*} number The number you want to round and convert to text.
- * @param {*} decimals Optional. The number of digits to the right of the decimal point.
- * @param {*} no_commas Optional. A logical value that, if TRUE, prevents FIXED from including commas in the returned text.
- * @returns
- */
-function FIXED(number, decimals = 2, no_commas = false) {
-  number = parseNumber(number);
-  if (isNaN(number)) {
-    return value
-  }
-
-  decimals = parseNumber(decimals);
-  if (isNaN(decimals)) {
-    return value
-  }
-
-  if (decimals < 0) {
-    const factor = Math.pow(10, -decimals);
-    number = Math.round(number / factor) * factor;
-  } else {
-    number = number.toFixed(decimals);
-  }
-
-  if (no_commas) {
-    number = number.toString().replace(/,/g, '');
-  } else {
-    const parts = number.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+$)/g, ',');
-    number = parts.join('.');
-  }
-
-  return number
-}
-
-/**
- * Returns the leftmost characters from a text value.
- *
- * Category: Text
- *
- * @param {*} text The text string that contains the characters you want to extract.
- * @param {*} num_chars Optional. Specifies the number of characters you want LEFT to extract.
- * @returns
- */
-function LEFT(text, num_chars) {
-  const someError = anyError(text, num_chars);
-
-  if (someError) {
-    return someError
-  }
-
-  text = parseString(text);
-  num_chars = num_chars === undefined ? 1 : num_chars;
-  num_chars = parseNumber(num_chars);
-
-  if (num_chars instanceof Error || typeof text !== 'string') {
-    return value
-  }
-
-  return text.substring(0, num_chars)
-}
-
-/**
- * Returns the number of characters in a text string
- *
- * Category: Text
- *
- * @param {*} text The text whose length you want to find. Spaces count as characters.
- * @returns
- */
-function LEN(text) {
-  if (arguments.length === 0) {
-    return error
-  }
-
-  if (text instanceof Error) {
-    return text
-  }
-
-  if (Array.isArray(text)) {
-    return value
-  }
-
-  const textAsString = parseString(text);
-
-  return textAsString.length
-}
-
-/**
- * Converts text to lowercase.
- *
- * Category: Text
- *
- * @param {*} text The text you want to convert to lowercase. LOWER does not change characters in text that are not letters.
- * @returns
- */
-function LOWER(text) {
-  if (arguments.length !== 1) {
-    return value
-  }
-
-  text = parseString(text);
-
-  if (anyIsError(text)) {
-    return text
-  }
-
-  return text.toLowerCase()
-}
-
-/**
- * Returns a specific number of characters from a text string starting at the position you specify
- *
- * Category: Text
- *
- * @param {*} text The text string containing the characters you want to extract.
- * @param {*} start_num The position of the first character you want to extract in text. The first character in text has start_num 1, and so on.
- * @param {*} num_chars Specifies the number of characters you want MID to return from text.
- * @returns
- */
-function MID(text, start_num, num_chars) {
-  if (start_num === undefined || start_num === null) {
-    return value
-  }
-
-  start_num = parseNumber(start_num);
-  num_chars = parseNumber(num_chars);
-
-  if (anyIsError(start_num, num_chars) || typeof text !== 'string') {
-    return num_chars
-  }
-
-  const begin = start_num - 1;
-  const end = begin + num_chars;
-
-  return text.substring(begin, end)
-}
-
-// TODO
-/**
- * Converts text to number in a locale-independent manner.
- *
- * Category: Text
- *
- * @param {*} text The text to convert to a number.
- * @param {*} decimal_separator Optional. The character used to separate the integer and fractional part of the result.
- * @param {*} group_separator Optional. The character used to separate groupings of numbers, such as thousands from hundreds and millions from thousands.
- * @returns
- */
-function NUMBERVALUE(text, decimal_separator, group_separator) {
-  text = isDefined(text) ? text : '';
-
-  if (typeof text === 'number') {
-    return text
-  }
-
-  if (typeof text !== 'string') {
-    return na
-  }
-
-  decimal_separator = typeof decimal_separator === 'undefined' ? '.' : decimal_separator;
-  group_separator = typeof group_separator === 'undefined' ? ',' : group_separator;
-
-  return Number(text.replace(decimal_separator, '.').replace(group_separator, ''))
-}
-
-// TODO
-/**
- * -- Not implemented --
- */
-function PRONETIC() {
-  throw new Error('PRONETIC is not implemented')
-}
-
-/**
- * Capitalizes the first letter in each word of a text value.
- *
- * Category: Text
- *
- * @param {*} text Text enclosed in quotation marks, a formula that returns text, or a reference to a value containing the text you want to partially capitalize.
- * @returns
- */
-function PROPER(text) {
-  if (anyIsError(text)) {
-    return text
-  }
-
-  if (isNaN(text) && typeof text === 'number') {
-    return value
-  }
-
-  text = parseString(text);
-
-  return text.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase())
-}
-
-/**
- * Replaces characters within text
- *
- * Category: Text
- *
- * @param {*} old_text Text in which you want to replace some characters.
- * @param {*} num_chars The number of characters in old_text that you want REPLACE to replace with new_text.
- * @param {*} length he number of characters in old_text that you want REPLACEB to replace with new_text.
- * @param {*} new_text he text that will replace characters in old_text.
- * @returns
- */
-function REPLACE(old_text, num_chars, length, new_text) {
-  num_chars = parseNumber(num_chars);
-  length = parseNumber(length);
-
-  if (anyIsError(num_chars, length) || typeof old_text !== 'string' || typeof new_text !== 'string') {
-    return value
-  }
-
-  return old_text.substr(0, num_chars - 1) + new_text + old_text.substr(num_chars - 1 + length)
-}
-
-/**
- * Repeats text a given number of times.
- *
- * Category: Text
- *
- * @param {*} text The text you want to repeat.
- * @param {*} number_times A positive number specifying the number of times to repeat text.
- * @returns
- */
-function REPT(text, number_times) {
-  const someError = anyError(text, number_times);
-
-  if (someError) {
-    return someError
-  }
-
-  text = parseString(text);
-  number_times = parseNumber(number_times);
-
-  if (number_times instanceof Error) {
-    return number_times
-  }
-
-  return new Array(number_times + 1).join(text)
-}
-
-/**
- * Returns the rightmost characters from a text value
- *
- * Category: Text
- *
- * @param {*} text The text string containing the characters you want to extract.
- * @param {*} num_chars Optional. Specifies the number of characters you want RIGHT to extract.
- * @returns
- */
-function RIGHT(text, num_chars) {
-  const someError = anyError(text, num_chars);
-
-  if (someError) {
-    return someError
-  }
-
-  text = parseString(text);
-  num_chars = num_chars === undefined ? 1 : num_chars;
-  num_chars = parseNumber(num_chars);
-
-  if (num_chars instanceof Error) {
-    return num_chars
-  }
-
-  return text.substring(text.length - num_chars)
-}
-
-/**
- * Finds one text value within another (not case-sensitive)
- *
- * Category: Text
- *
- * @param {*} find_text The text that you want to find.
- * @param {*} within_text The text in which you want to search for the value of the find_text argument.
- * @param {*} start_num Optional. The character number in the within_text argument at which you want to start searching.
- * @returns
- */
-function SEARCH(find_text, within_text, start_num) {
-  let foundAt;
-
-  if (typeof find_text !== 'string' || typeof within_text !== 'string') {
-    return value
-  }
-
-  start_num = start_num === undefined ? 0 : start_num;
-  foundAt = within_text.toLowerCase().indexOf(find_text.toLowerCase(), start_num - 1) + 1;
-
-  return foundAt === 0 ? value : foundAt
-}
-
-/**
- * Substitutes new text for old text in a text string.
- *
- * Category: Text
- *
- * @param {*} text The text or the reference to a value containing text for which you want to substitute characters.
- * @param {*} old_text The text you want to replace.
- * @param {*} new_text The text you want to replace old_text with.
- * @param {*} instance_num Optional. Specifies which occurrence of old_text you want to replace with new_text. If you specify instance_num, only that instance of old_text is replaced. Otherwise, every occurrence of old_text in text is changed to new_text.
- * @returns
- */
-function SUBSTITUTE(text, old_text, new_text, instance_num) {
-  if (arguments.length < 3) {
-    return na
-  }
-
-  if (!text || !old_text) {
-    return text
-  } else if (instance_num === undefined) {
-    return text.split(old_text).join(new_text)
-  } else {
-    instance_num = Math.floor(Number(instance_num));
-
-    if (Number.isNaN(instance_num) || instance_num <= 0) {
-      return value
-    }
-
-    let index = 0;
-    let i = 0;
-
-    while (index > -1 && text.indexOf(old_text, index) > -1) {
-      index = text.indexOf(old_text, index + 1);
-      i++;
-
-      if (index > -1 && i === instance_num) {
-        return text.substring(0, index) + new_text + text.substring(index + old_text.length)
-      }
-    }
-
-    return text
-  }
-}
-
-/**
- * Converts its arguments to text.
- *
- * Category: Text
- *
- * @param {*} value The value you want to test.
- * @returns
- */
-function T(value) {
-  if (value instanceof Error) {
-    return value
-  }
-
-  return typeof value === 'string' ? value : ''
-}
-
-/**
- * Formats a number and converts it to text.
- *
- * Category: Text
- *
- * @param {*} value A numeric value that you want to be converted into text.
- * @param {*} format_text A text string that defines the formatting that you want to be applied to the supplied value.
- * @returns
- */
-function TEXT(value$1, format_text) {
-  if (value$1 === undefined || value$1 instanceof Error || format_text instanceof Error) {
-    return na
-  }
-
-  if (format_text === undefined || format_text === null) {
-    return ''
-  }
-
-  if (typeof format_text === 'number') {
-    return String(format_text)
-  }
-
-  if (typeof format_text !== 'string') {
-    return value
-  }
-
-  const currencySymbol = format_text.startsWith('$') ? '$' : '';
-  const isPercent = format_text.endsWith('%');
-  format_text = format_text.replace(/%/g, '').replace(/\$/g, '');
-
-  // count all 0s after the decimal point
-  const decimalPlaces = format_text.split('.')[1].match(/0/g).length;
-
-  const noCommas = !format_text.includes(',');
-
-  if (isPercent) {
-    value$1 = value$1 * 100;
-  }
-
-  value$1 = FIXED(value$1, decimalPlaces, noCommas);
-
-  if (value$1.startsWith('-')) {
-    value$1 = value$1.replace('-', '');
-    value$1 = '-' + currencySymbol + value$1;
-  } else {
-    value$1 = currencySymbol + value$1;
-  }
-
-  if (isPercent) {
-    value$1 = value$1 + '%';
-  }
-
-  return value$1
-}
-
-/**
- * Combines the text from multiple ranges and/or strings.
- *
- * Category: Text
- * @param {*} delimiter A text string, either empty, or one or more characters enclosed by double quotes, or a reference to a valid text string. If a number is supplied, it will be treated as text.
- * @param {*} ignore_empty If TRUE, ignores empty values.
- * @param {*} args Text item to be joined. A text string, or array of strings, such as a range of values.
- * @returns
- */
-function TEXTJOIN(delimiter, ignore_empty, ...args) {
-  if (typeof ignore_empty !== 'boolean') {
-    ignore_empty = parseBool(ignore_empty);
-  }
-
-  if (arguments.length < 3) {
-    return na
-  }
-
-  delimiter = delimiter !== null && delimiter !== undefined ? delimiter : '';
-
-  let flatArgs = flatten(args);
-  let textToJoin = ignore_empty ? flatArgs.filter((text) => text) : flatArgs;
-
-  if (Array.isArray(delimiter)) {
-    delimiter = flatten(delimiter);
-
-    let chunks = textToJoin.map((item) => [item]);
-    let index = 0;
-
-    for (let i = 0; i < chunks.length - 1; i++) {
-      chunks[i].push(delimiter[index]);
-      index++;
-
-      if (index === delimiter.length) {
-        index = 0;
-      }
-    }
-
-    textToJoin = flatten(chunks);
-
-    return textToJoin.join('')
-  }
-
-  return textToJoin.join(delimiter)
-}
-
-/**
- * Removes spaces from text.
- *
- * Category: Text
- *
- * @param {*} text The text from which you want spaces removed.
- * @returns
- */
-function TRIM(text) {
-  text = parseString(text);
-
-  if (text instanceof Error) {
-    return text
-  }
-
-  return text.replace(/\s+/g, ' ').trim()
-}
-
-const UNICHAR = CHAR;
-
-const UNICODE = CODE;
-
-/**
- * Converts text to uppercase.
- *
- * Category: Text
- *
- * @param {*} text The text you want converted to uppercase. Text can be a reference or text string.
- * @returns
- */
-function UPPER(text) {
-  text = parseString(text);
-
-  if (text instanceof Error) {
-    return text
-  }
-
-  return text.toUpperCase()
-}
-
-/**
- * Converts a text argument to a number.
- *
- * Category: Text
- *
- * @param {*} text The text enclosed in quotation marks or a reference to a value containing the text you want to convert.
- * @returns
- */
-function VALUE(text) {
-  const anyError$1 = anyError(text);
-
-  if (anyError$1) {
-    return anyError$1
-  }
-
-  if (typeof text === 'number') {
-    return text
-  }
-
-  if (!isDefined(text)) {
-    text = '';
-  }
-
-  if (typeof text !== 'string') {
-    return value
-  }
-
-  const isPercent = /(%)$/.test(text) || /^(%)/.test(text);
-  text = text.replace(/^[^0-9-]{0,3}/, '');
-  text = text.replace(/[^0-9]{0,3}$/, '');
-  text = text.replace(/[ ,]/g, '');
-
-  if (text === '') {
-    return 0
-  }
-
-  let output = Number(text);
-
-  if (isNaN(output)) {
-    return value
-  }
-
-  output = output || 0;
-
-  if (isPercent) {
-    output = output * 0.01;
-  }
-
-  return output
 }
 
 function isValidBinaryNumber(number) {
@@ -14290,7 +13939,7 @@ function BIN2DEC(number) {
  * Category: Engineering
  *
  * @param {*} number The binary number you want to convert. Number cannot contain more than 10 characters (10 bits). The most significant bit of number is the sign bit. The remaining 9 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, BIN2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, BIN2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function BIN2HEX(number, places) {
@@ -14337,7 +13986,7 @@ function BIN2HEX(number, places) {
  * Category: Engineering
  *
  * @param {*} number The binary number you want to convert. Number cannot contain more than 10 characters (10 bits). The most significant bit of number is the sign bit. The remaining 9 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, BIN2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, BIN2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function BIN2OCT(number, places) {
@@ -14576,7 +14225,7 @@ function BITXOR(number1, number2) {
  *
  * @param {*} real_num The real coefficient of the complex number.
  * @param {*} i_num The imaginary coefficient of the complex number.
- * @param {*} suffix Optional. The suffix for the imaginary component of the complex number. If omitted, suffix is assumed to be "i".
+ * @param {*} [suffix] Optional. The suffix for the imaginary component of the complex number. If omitted, suffix is assumed to be "i".
  * @returns
  */
 function COMPLEX(real_num, i_num, suffix) {
@@ -14653,7 +14302,7 @@ function CONVERT(number, from_unit, to_unit) {
     ['cubic foot', 'ft3', ['ft^3'], 'volume', false, true, 0.028316846592],
     ['cubic inch', 'in3', ['in^3'], 'volume', false, true, 0.000016387064],
     ['cubic light-year', 'ly3', ['ly^3'], 'volume', false, true, 8.46786664623715e-47],
-    ['cubic metre', 'm?', null, 'volume', true, true, 1],
+    ['cubic metre', 'm3', ['m^3'], 'volume', true, true, 1],
     ['cubic mile', 'mi3', ['mi^3'], 'volume', false, true, 4168181825.44058],
     ['cubic nautical mile', 'Nmi3', ['Nmi^3'], 'volume', false, true, 6352182208],
     ['cubic Pica', 'Pica3', ['Picapt3', 'Pica^3', 'Picapt^3'], 'volume', false, true, 7.58660370370369e-8],
@@ -14914,7 +14563,7 @@ function CONVERT(number, from_unit, to_unit) {
  * Category: Engineering
  *
  * @param {*} number The decimal integer you want to convert. If number is negative, valid place values are ignored and DEC2BIN returns a 10-character (10-bit) binary number in which the most significant bit is the sign bit. The remaining 9 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, DEC2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, DEC2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function DEC2BIN(number, places) {
@@ -14965,7 +14614,7 @@ function DEC2BIN(number, places) {
  * Category: Engineering
  *
  * @param {*} number The decimal integer you want to convert. If number is negative, places is ignored and DEC2HEX returns a 10-character (40-bit) hexadecimal number in which the most significant bit is the sign bit. The remaining 39 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, DEC2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, DEC2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function DEC2HEX(number, places) {
@@ -15016,7 +14665,7 @@ function DEC2HEX(number, places) {
  * Category: Engineering
  *
  * @param {*} number The decimal integer you want to convert. If number is negative, places is ignored and DEC2OCT returns a 10-character (30-bit) octal number in which the most significant bit is the sign bit. The remaining 29 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, DEC2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, DEC2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function DEC2OCT(number, places) {
@@ -15067,7 +14716,7 @@ function DEC2OCT(number, places) {
  * Category: Engineering
  *
  * @param {*} number1 The first number.
- * @param {*} number2 Optional. The second number. If omitted, number2 is assumed to be zero.
+ * @param {*} [number2] Optional. The second number. If omitted, number2 is assumed to be zero.
  * @returns
  */
 function DELTA(number1, number2) {
@@ -15091,7 +14740,7 @@ function DELTA(number1, number2) {
  * Category: Engineering
  *
  * @param {*} lower_limit The lower bound for integrating ERF.
- * @param {*} upper_limit Optional. The upper bound for integrating ERF. If omitted, ERF integrates between zero and lower_limit.
+ * @param {*} [upper_limit] Optional. The upper bound for integrating ERF. If omitted, ERF integrates between zero and lower_limit.
  * @returns
  */
 function ERF(lower_limit, upper_limit) {
@@ -15105,24 +14754,8 @@ function ERF(lower_limit, upper_limit) {
     return value
   }
 
-  return jstat.erf(lower_limit)
+  return jStat.erf(lower_limit)
 }
-
-// TODO
-
-/**
- * -- Not implemented --
- *
- * Returns the error function.
- *
- * Category: Engineering
- *
- * @param {*} x The lower bound for integrating ERF.PRECISE.
- * @returns
- */
-ERF.PRECISE = () => {
-  throw new Error('ERF.PRECISE is not implemented')
-};
 
 /**
  * Returns the complementary error function.
@@ -15138,24 +14771,8 @@ function ERFC(x) {
     return value
   }
 
-  return jstat.erfc(x)
+  return jStat.erfc(x)
 }
-
-// TODO
-
-/**
- * -- Not implemented --
- *
- * Returns the complementary ERF function integrated between x and infinity.
- *
- * Category: Engineering
- *
- * @param {*} x The lower bound for integrating ERFC.PRECISE.
- * @returns
- */
-ERFC.PRECISE = () => {
-  throw new Error('ERFC.PRECISE is not implemented')
-};
 
 /**
  * Tests whether a number is greater than a threshold value.
@@ -15163,7 +14780,7 @@ ERFC.PRECISE = () => {
  * Category: Engineering
  *
  * @param {*} number The value to test against step.
- * @param {*} step Optional. The threshold value. If you omit a value for step, GESTEP uses zero.
+ * @param {*} [step] Optional. The threshold value. If you omit a value for step, GESTEP uses zero.
  * @returns
  */
 function GESTEP(number, step) {
@@ -15184,7 +14801,7 @@ function GESTEP(number, step) {
  * Category: Engineering
  *
  * @param {*} number The hexadecimal number you want to convert. Number cannot contain more than 10 characters. The most significant bit of number is the sign bit (40th bit from the right). The remaining 9 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, HEX2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, HEX2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function HEX2BIN(number, places) {
@@ -15261,7 +14878,7 @@ function HEX2DEC(number) {
  * Category: Engineering
  *
  * @param {*} number The hexadecimal number you want to convert. Number cannot contain more than 10 characters. The most significant bit of number is the sign bit. The remaining 39 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, HEX2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, HEX2OCT uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function HEX2OCT(number, places) {
@@ -16074,27 +15691,19 @@ function IMSUM() {
 
   const args = flatten(arguments);
 
-  // Initialize result
-  let result = args[0];
-
-  // Loop on all numbers
-  for (let i = 1; i < args.length; i++) {
-    // Lookup coefficients of two complex numbers
-    const a = IMREAL(result);
-    const b = IMAGINARY(result);
-    const c = IMREAL(args[i]);
-    const d = IMAGINARY(args[i]);
-
-    if (anyIsError(a, b, c, d)) {
+  let numberSum = 0;
+  let imaginarySum = 0;
+  for (const arg of args) {
+    const realPart = +IMREAL(arg);
+    const imaginaryPart = +IMAGINARY(arg);
+    if (anyIsError(realPart, imaginaryPart)) {
       return value
     }
-
-    // Complute product of two complex numbers
-    result = COMPLEX(a + c, b + d);
+    numberSum += realPart;
+    imaginarySum += imaginaryPart;
   }
 
-  // Return sum of complex numbers
-  return result
+  return COMPLEX(numberSum, imaginarySum, 'i')
 }
 
 /**
@@ -16129,7 +15738,7 @@ function IMTAN(inumber) {
  * Category: Engineering
  *
  * @param {*} number The octal number you want to convert. Number may not contain more than 10 characters. The most significant bit of number is the sign bit. The remaining 29 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, OCT2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, OCT2BIN uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function OCT2BIN(number, places) {
@@ -16206,7 +15815,7 @@ function OCT2DEC(number) {
  * Category: Engineering
  *
  * @param {*} number The octal number you want to convert. Number may not contain more than 10 octal characters (30 bits). The most significant bit of number is the sign bit. The remaining 29 bits are magnitude bits. Negative numbers are represented using two's-complement notation.
- * @param {*} places Optional. The number of characters to use. If places is omitted, OCT2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
+ * @param {*} [places] Optional. The number of characters to use. If places is omitted, OCT2HEX uses the minimum number of characters necessary. Places is useful for padding the return value with leading 0s (zeros).
  * @returns
  */
 function OCT2HEX(number, places) {
@@ -16299,10 +15908,10 @@ const RANKEQ = RANK.EQ;
 const SKEWP = SKEW.P;
 const STDEVP = STDEV.P;
 const STDEVS = STDEV.S;
-const TDIST = T$1.DIST;
-const TDISTRT = T$1.DIST.RT;
-const TINV = T$1.INV;
-const TTEST = T$1.TEST;
+const TDIST = T.DIST;
+const TDISTRT = T.DIST.RT;
+const TINV = T.INV;
+const TTEST = T.TEST;
 const VARP = VAR.P;
 const VARS = VAR.S;
 const WEIBULLDIST = WEIBULL.DIST;
@@ -16841,6 +16450,45 @@ function ensureDate(d) {
   return d instanceof Date ? d : new Date(d)
 }
 
+// Calculate last coupon date before settlement
+function lastCoupDateBeforeSettlement(settlement, maturity, frequency) {
+  let date = parseDate(maturity);
+  date.setFullYear(settlement.getFullYear());
+
+  if (date < settlement) {
+    date.setFullYear(date.getFullYear() + 1);
+  }
+
+  // Adjust the date based on the coupon frequency until date is later than settlement
+  while (date > settlement) {
+    date.setMonth(date.getMonth() + -12 / frequency);
+  }
+
+  return date
+}
+
+function validateFrequency(frequency) {
+  frequency = parseNumber(frequency);
+
+  // Return error if frequency is neither 1, 2, or 4
+  if ([1, 2, 4].indexOf(frequency) === -1) {
+    return num
+  }
+
+  return frequency
+}
+
+function validateBasis(basis) {
+  basis = parseNumber(basis);
+
+  // Return error if basis is neither 0, 1, 2, 3, or 4
+  if ([0, 1, 2, 3, 4].indexOf(basis) === -1) {
+    return num
+  }
+
+  return basis
+}
+
 /**
  * Returns the accrued interest for a security that pays periodic interest.
  *
@@ -16852,8 +16500,8 @@ function ensureDate(d) {
  * @param {*} rate The security's annual coupon rate.
  * @param {*} par The security's par value. If you omit par, ACCRINT uses $1,000.
  * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @param {*} calc_method Optional. Not implemented in formulajs. A logical value that specifies the way to calculate the total accrued interest when the date of settlement is later than the date of first_interest. A value of TRUE (1) returns the total accrued interest from issue to settlement. A value of FALSE (0) returns the accrued interest from first_interest to settlement. If you do not enter the argument, it defaults to TRUE.
+ * @param {*} [basis] Optional. The type of day count basis to use.
+ * @param {*} [calc_method] Optional. Not implemented in formulajs. A logical value that specifies the way to calculate the total accrued interest when the date of settlement is later than the date of first_interest. A value of TRUE (1) returns the total accrued interest from issue to settlement. A value of FALSE (0) returns the accrued interest from first_interest to settlement. If you do not enter the argument, it defaults to TRUE.
  * @returns
  */
 function ACCRINT(issue, first_interest, settlement, rate, par, frequency, basis) {
@@ -16861,6 +16509,12 @@ function ACCRINT(issue, first_interest, settlement, rate, par, frequency, basis)
   issue = ensureDate(issue);
   first_interest = ensureDate(first_interest);
   settlement = ensureDate(settlement);
+  frequency = validateFrequency(frequency);
+  basis = validateBasis(basis);
+
+  if (anyError(frequency, basis)) {
+    return num
+  }
 
   if (!validDate(issue) || !validDate(first_interest) || !validDate(settlement)) {
     return value
@@ -16868,16 +16522,6 @@ function ACCRINT(issue, first_interest, settlement, rate, par, frequency, basis)
 
   // Return error if either rate or par are lower than or equal to zero
   if (rate <= 0 || par <= 0) {
-    return num
-  }
-
-  // Return error if frequency is neither 1, 2, or 4
-  if ([1, 2, 4].indexOf(frequency) === -1) {
-    return num
-  }
-
-  // Return error if basis is neither 0, 1, 2, 3, or 4
-  if ([0, 1, 2, 3, 4].indexOf(basis) === -1) {
     return num
   }
 
@@ -16894,88 +16538,7 @@ function ACCRINT(issue, first_interest, settlement, rate, par, frequency, basis)
   return par * rate * YEARFRAC(issue, settlement, basis)
 }
 
-// TODO
 /**
- * -- Not implemented --
- *
- * Returns the accrued interest for a security that pays interest at maturity.
- *
- * Category: Financial
- *
- * @param {*} issue The security's issue date.
- * @param {*} settlement The security's maturity date.
- * @param {*} rate The security's annual coupon rate.
- * @param {*} par The security's par value. If you omit par, ACCRINTM uses $1,000.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function ACCRINTM() {
-  throw new Error('ACCRINTM is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the depreciation for each accounting period by using a depreciation coefficient.
- *
- * Category: Financial
- *
- * @param {*} cost The cost of the asset.
- * @param {*} date_purchased The date of the purchase of the asset.
- * @param {*} first_period The date of the end of the first period.
- * @param {*} salvage The salvage value at the end of the life of the asset.
- * @param {*} period The period.
- * @param {*} rate The rate of depreciation.
- * @param {*} basis Optional. The year basis to be used.
- * @returns
- */
-function AMORDEGRC() {
-  throw new Error('AMORDEGRC is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the depreciation for each accounting period.
- *
- * Category: Financial
- *
- * @param {*} cost The cost of the asset.
- * @param {*} date_purchased The date of the purchase of the asset.
- * @param {*} first_period The date of the end of the first period.
- * @param {*} salvage The salvage value at the end of the life of the asset.
- * @param {*} period The period.
- * @param {*} rate The rate of depreciation.
- * @param {*} basis Optional. The year basis to be used.
- * @returns
- */
-function AMORLINC() {
-  throw new Error('AMORLINC is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the number of days from the beginning of the coupon period to the settlement date.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function COUPDAYBS() {
-  throw new Error('COUPDAYBS is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
  *
  * Returns the number of days in the coupon period that contains the settlement date.
  *
@@ -16984,83 +16547,49 @@ function COUPDAYBS() {
  * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
  * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
  * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
+ * @param {*} [basis] Optional. The type of day count basis to use.
  * @returns
  */
-function COUPDAYS() {
-  throw new Error('COUPDAYS is not implemented')
-}
+function COUPDAYS(settlement, maturity, frequency, basis) {
+  basis = validateBasis(basis);
+  frequency = validateFrequency(frequency);
+  settlement = parseDate(settlement);
+  maturity = parseDate(maturity);
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the number of days from the settlement date to the next coupon date.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function COUPDAYSNC() {
-  throw new Error('COUPDAYSNC is not implemented')
-}
+  if (anyError(settlement, maturity)) {
+    return value
+  }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the next coupon date after the settlement date.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function COUPNCD() {
-  throw new Error('COUPNCD is not implemented')
-}
+  if (anyError(frequency, basis) || settlement >= maturity) {
+    return num
+  }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the number of coupons payable between the settlement date and maturity date.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function COUPNUM() {
-  throw new Error('COUPNUM is not implemented')
-}
+  if (basis === 1) {
+    let date = lastCoupDateBeforeSettlement(settlement, maturity, frequency);
+    let nextDate = parseDate(date);
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the previous coupon date before the settlement date.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function COUPPCD() {
-  throw new Error('COUPPCD is not implemented')
+    // Set month of the nextDate to the next coupon month
+    nextDate.setMonth(nextDate.getMonth() + 12 / frequency);
+
+    return DATEDIF(date, nextDate, 'D')
+  }
+
+  let numOfDays;
+
+  switch (basis) {
+    case 0:
+    case 2:
+    case 4:
+      numOfDays = 360;
+      break
+    case 3:
+      numOfDays = 365;
+      break
+    default:
+      return num
+  }
+
+  return numOfDays / frequency
 }
 
 /**
@@ -17186,7 +16715,7 @@ function CUMPRINC(rate, nper, pv, start_period, end, type) {
  * @param {*} salvage The value at the end of the depreciation (sometimes called the salvage value of the asset).
  * @param {*} life The number of periods over which the asset is being depreciated (sometimes called the useful life of the asset).
  * @param {*} period The period for which you want to calculate the depreciation. Period must use the same units as life.
- * @param {*} month Optional. The number of months in the first year. If month is omitted, it is assumed to be 12.
+ * @param {*} [month] Optional. The number of months in the first year. If month is omitted, it is assumed to be 12.
  * @returns
  */
 function DB(cost, salvage, life, period, month) {
@@ -17261,7 +16790,7 @@ function DB(cost, salvage, life, period, month) {
  * @param {*} salvage The value at the end of the depreciation (sometimes called the salvage value of the asset). This value can be 0.
  * @param {*} life The number of periods over which the asset is being depreciated (sometimes called the useful life of the asset).
  * @param {*} period The period for which you want to calculate the depreciation. Period must use the same units as life.
- * @param {*} factor Optional. The rate at which the balance declines. If factor is omitted, it is assumed to be 2 (the double-declining balance method).
+ * @param {*} [factor] Optional. The rate at which the balance declines. If factor is omitted, it is assumed to be 2 (the double-declining balance method).
  * @returns
  */
 function DDB(cost, salvage, life, period, factor) {
@@ -17315,7 +16844,7 @@ function DDB(cost, salvage, life, period, factor) {
  * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
  * @param {*} pr The security's price per $100 face value.
  * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} basis Optional. The type of day count basis to use.
+ * @param {*} [basis] Optional. The type of day count basis to use.
  * @returns
  */
 function DISC(settlement, maturity, pr, redemption, basis) {
@@ -17454,26 +16983,6 @@ function DOLLARFR(decimal_dollar, fraction) {
   return result
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the annual duration of a security with periodic interest payments.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} coupon The security's annual coupon rate.
- * @param {*} yld The security's annual yield.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function DURATION() {
-  throw new Error('DURATION is not implemented')
-}
-
 /**
  * Returns the effective annual interest rate.
  *
@@ -17511,8 +17020,8 @@ function EFFECT(nominal_rate, npery) {
  * @param {*} rate The interest rate per period.
  * @param {*} nper The total number of payment periods in an annuity.
  * @param {*} pmt The payment made each period; it cannot change over the life of the annuity. Typically, pmt contains principal and interest but no other fees or taxes. If pmt is omitted, you must include the pv argument.
- * @param {*} pv Optional. The present value, or the lump-sum amount that a series of future payments is worth right now. If pv is omitted, it is assumed to be 0 (zero), and you must include the pmt argument.
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
+ * @param {*} [pv] Optional. The present value, or the lump-sum amount that a series of future payments is worth right now. If pv is omitted, it is assumed to be 0 (zero), and you must include the pmt argument.
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
  * @returns
  */
 function FV(rate, nper, payment, value$1, type) {
@@ -17578,25 +17087,6 @@ function FVSCHEDULE(principal, schedule) {
   return future
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the interest rate for a fully invested security.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} investment The amount invested in the security.
- * @param {*} redemption The amount to be received at maturity.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function INTRATE() {
-  throw new Error('INTRATE is not implemented')
-}
-
 /**
  * Returns the interest payment for an investment for a given period.
  *
@@ -17606,8 +17096,8 @@ function INTRATE() {
  * @param {*} per The period for which you want to find the interest and must be in the range 1 to nper.
  * @param {*} nper The total number of payment periods in an annuity.
  * @param {*} pv The present value, or the lump-sum amount that a series of future payments is worth right now.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0).
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0).
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due. If type is omitted, it is assumed to be 0.
  * @returns
  */
 function IPMT(rate, per, nper, pv, fv, type) {
@@ -17636,8 +17126,8 @@ function IPMT(rate, per, nper, pv, fv, type) {
         ? 0
         : -pv
       : type === 1
-      ? FV(rate, per - 2, payment, pv, 1) - payment
-      : FV(rate, per - 1, payment, pv, 0);
+        ? FV(rate, per - 2, payment, pv, 1) - payment
+        : FV(rate, per - 1, payment, pv, 0);
 
   // Return interest
   return interest * rate
@@ -17652,7 +17142,7 @@ function IPMT(rate, per, nper, pv, fv, type) {
  - Values must contain at least one positive value and one negative value to calculate the internal rate of return.
  - IRR uses the order of values to interpret the order of cash flows. Be sure to enter your payment and income values in the sequence you want.
  - If an array or reference argument contains text, logical values, or empty values, those values are ignored.
- * @param {*} guess Optional. A number that you guess is close to the result of IRR.
+ * @param {*} [guess] Optional. A number that you guess is close to the result of IRR.
  - Microsoft Excel uses an iterative technique for calculating IRR. Starting with guess, IRR cycles through the calculation until the result is accurate within 0.00001 percent. If IRR can't find a result that works after 20 tries, the #NUM! error value is returned.
  - In most cases you do not need to provide guess for the IRR calculation. If guess is omitted, it is assumed to be 0.1 (10 percent).
  - If IRR gives the #NUM! error value, or if the result is not close to what you expected, try again with a different value for guess.
@@ -17660,55 +17150,27 @@ function IPMT(rate, per, nper, pv, fv, type) {
  */
 function IRR(values, guess) {
   // Credits: algorithm inspired by Apache OpenOffice
-  guess = guess || 0;
+  guess = typeof guess === 'number' ? guess : typeof guess === 'undefined' ? 0.1 : parseNumber(guess);
 
-  values = parseNumberArray(flatten(values));
-  guess = parseNumber(guess);
+  values = flatten(values).filter(isDefined);
+
+  values = parseNumberArray(values);
 
   if (anyIsError(values, guess)) {
     return value
   }
 
-  // Calculates the resulting amount
-  const irrResult = (values, dates, rate) => {
-    const r = rate + 1;
-    let result = values[0];
+  // Use Float64Array for better performance with numeric operations
+  const cashFlows = new Float64Array(values.length);
 
-    for (let i = 1; i < values.length; i++) {
-      result += values[i] / Math.pow(r, (dates[i] - dates[0]) / 365);
-    }
-
-    return result
-  };
-
-  // Calculates the first derivation
-  const irrResultDeriv = (values, dates, rate) => {
-    const r = rate + 1;
-    let result = 0;
-
-    for (let i = 1; i < values.length; i++) {
-      const frac = (dates[i] - dates[0]) / 365;
-      result -= (frac * values[i]) / Math.pow(r, frac + 1);
-    }
-
-    return result
-  };
-
-  // Initialize dates and check that values contains at least one positive value and one negative value
-  const dates = [];
   let positive = false;
   let negative = false;
-
+  // Single-pass processing of input values
   for (let i = 0; i < values.length; i++) {
-    dates[i] = i === 0 ? 0 : dates[i - 1] + 365;
+    cashFlows[i] = values[i];
 
-    if (values[i] > 0) {
-      positive = true;
-    }
-
-    if (values[i] < 0) {
-      negative = true;
-    }
+    if (cashFlows[i] > 0) positive = true;
+    if (cashFlows[i] < 0) negative = true;
   }
 
   // Return error if values does not contain at least one positive value and one negative value
@@ -17716,26 +17178,143 @@ function IRR(values, guess) {
     return num
   }
 
-  // Initialize guess and resultRate
-  guess = guess === undefined ? 0.1 : guess;
-  let resultRate = guess;
+  // Calculates the npv amount
+  const npv = (rate) => {
+    if (rate <= -1) rate = -0.999999999;
 
-  // Set maximum epsilon for end of iteration
-  const epsMax = 1e-10;
+    let result = cashFlows[0];
+    const r = 1 + rate;
 
-  // Implement Newton's method
-  let newRate, epsRate, resultValue;
-  let contLoop = true;
-  do {
-    resultValue = irrResult(values, dates, resultRate);
-    newRate = resultRate - resultValue / irrResultDeriv(values, dates, resultRate);
-    epsRate = Math.abs(newRate - resultRate);
-    resultRate = newRate;
-    contLoop = epsRate > epsMax && Math.abs(resultValue) > epsMax;
-  } while (contLoop)
+    // Avoid repeated Math.pow calls by using manual exponentiation
+    let factor = 1;
+    for (let i = 1; i < cashFlows.length; i++) {
+      factor *= r;
+      result += cashFlows[i] / factor;
+    }
 
-  // Return internal rate of return
-  return resultRate
+    return result
+  };
+
+  // Memoized NPV to avoid recalculating for the same rates
+  const npvCache = new Map();
+  const cachedNpv = function (rate) {
+    const roundedRate = Math.round(rate * 1e10) / 1e10; // Round to 10 decimal places for caching
+
+    if (npvCache.has(roundedRate)) {
+      return npvCache.get(roundedRate)
+    }
+
+    const result = npv(roundedRate);
+    npvCache.set(roundedRate, result);
+    return result
+  };
+  // Combined method: Start with Newton-Raphson for speed, then switch to bisection for reliability
+  const combinedMethod = function () {
+    // Set maximum epsilon for end of iteration
+    const epsMax = 1e-10;
+    const maxIterations = 1000;
+
+    // Phase 1: Newton-Raphson with adaptive step for faster convergence
+    let rate = guess;
+    let prevRate = rate;
+    let iteration = 0;
+
+    // Try Newton-Raphson until it shows signs of instability
+    while (iteration < maxIterations) {
+      // Limit Newton-Raphson attempts
+      const currentNpv = cachedNpv(rate);
+
+      // Exit early if we're already close enough
+      if (Math.abs(currentNpv) < epsMax) {
+        return rate
+      }
+
+      // Check if we're stabilizing
+      if (iteration > 0 && Math.abs(rate - prevRate) < epsMax * 10) {
+        break
+      }
+
+      // Calculate approximate derivative using secant method (faster than calculating exact derivative)
+      const delta = Math.max(0.0001, Math.abs(rate * 0.0001));
+      const derivNpv = (cachedNpv(rate + delta) - currentNpv) / delta;
+
+      // Exit if derivative is too small (to avoid division by near-zero)
+      if (Math.abs(derivNpv) < epsMax) {
+        break
+      }
+
+      // Calculate next rate using Newton step
+      prevRate = rate;
+      const newtonStep = currentNpv / derivNpv;
+
+      // Limit step size for stability
+      const maxStep = Math.max(0.1, Math.abs(rate) * 0.5);
+      if (Math.abs(newtonStep) > maxStep) {
+        rate -= Math.sign(newtonStep) * maxStep;
+      } else {
+        rate -= newtonStep;
+      }
+
+      // Constrain rate to reasonable values
+      if (rate <= -1) rate = -0.99999999;
+      if (rate > 1000) rate = 1000;
+
+      iteration++;
+    }
+
+    // Phase 2: Bisection method for reliability
+    // Use current Newton result as a starting point
+    let npvAtRate = cachedNpv(rate);
+
+    // If Newton's method gave a good answer, return it
+    if (Math.abs(npvAtRate) < epsMax) {
+      return rate
+    }
+
+    // Otherwise, set up bisection
+    let a, b;
+
+    // Find boundaries where NPV changes sign
+    if (npvAtRate > 0) {
+      a = rate;
+      // Find b where npv(b) < 0
+      b = rate + 0.1;
+      while (cachedNpv(b) > 0 && b < 1000) {
+        b = b * 2 + 0.1;
+      }
+      if (b >= 1000) return rate // Couldn't find sign change
+    } else {
+      b = rate;
+      // Find a where npv(a) > 0
+      a = Math.max(-0.99999999, rate - 0.1);
+      while (cachedNpv(a) < 0 && a > -0.99999999) {
+        a = Math.max(-0.99999999, a - 0.1);
+      }
+      if (a <= -0.99999999) return rate // Couldn't find sign change
+    }
+
+    // Perform bisection
+    let c;
+    for (let i = 0; i < maxIterations; i++) {
+      c = (a + b) / 2;
+      const npvC = cachedNpv(c);
+
+      if (Math.abs(npvC) < epsMax || Math.abs(b - a) < epsMax) {
+        return c
+      }
+
+      if (npvC * cachedNpv(a) < 0) {
+        b = c;
+      } else {
+        a = c;
+      }
+    }
+
+    return c
+  };
+
+  // Execute optimized combined method
+  return combinedMethod()
 }
 
 /**
@@ -17762,26 +17341,6 @@ function ISPMT(rate, per, nper, pv) {
 
   // Return interest
   return pv * rate * (per / nper - 1)
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the Macauley modified duration for a security with an assumed par value of $100.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} coupon The security's annual coupon rate.
- * @param {*} yld The security's annual yield.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function MDURATION() {
-  throw new Error('MDURATION is not implemented')
 }
 
 /**
@@ -17864,8 +17423,8 @@ function NOMINAL(effect_rate, npery) {
  * @param {*} rate The interest rate per period.
  * @param {*} pmt The payment made each period; it cannot change over the life of the annuity. Typically, pmt contains principal and interest but no other fees or taxes.
  * @param {*} pv The present value, or the lump-sum amount that a series of future payments is worth right now.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0).
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0).
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
 function NPER(rate, pmt, pv, fv, type) {
@@ -17927,96 +17486,6 @@ function NPV() {
   return value
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the price per $100 face value of a security with an odd first period.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} issue The security's issue date.
- * @param {*} first_coupon The security's first coupon date.
- * @param {*} rate The security's interest rate.
- * @param {*} yld The security's annual yield.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function ODDFPRICE() {
-  throw new Error('ODDFPRICE is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the yield of a security with an odd first period.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} issue The security's issue date.
- * @param {*} first_coupon The security's first coupon date.
- * @param {*} rate The security's interest rate.
- * @param {*} pr The security's price.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function ODDFYIELD() {
-  throw new Error('ODDFYIELD is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the price per $100 face value of a security with an odd last period.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} last_interest The security's last coupon date.
- * @param {*} rate The security's interest rate.
- * @param {*} yld The security's annual yield.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function ODDLPRICE() {
-  throw new Error('ODDLPRICE is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the yield of a security with an odd last period.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} last_interest The security's last coupon date.
- * @param {*} rate The security's interest rate
- * @param {*} pr The security's price.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function ODDLYIELD() {
-  throw new Error('ODDLYIELD is not implemented')
-}
-
 /**
  * Returns the number of periods required by an investment to reach a specified value.
  *
@@ -18053,8 +17522,8 @@ function PDURATION(rate, pv, fv) {
  * @param {*} rate The interest rate for the loan.
  * @param {*} nper The total number of payments for the loan.
  * @param {*} pv The present value, or the total amount that a series of future payments is worth now; also known as the principal.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
- * @param {*} type Optional. The number 0 (zero) or 1 and indicates when payments are due.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
+ * @param {*} [type] Optional. The number 0 (zero) or 1 and indicates when payments are due.
  * @returns
  */
 function PMT(rate, nper, pv, fv, type) {
@@ -18098,8 +17567,8 @@ function PMT(rate, nper, pv, fv, type) {
  * @param {*} per Specifies the period and must be in the range 1 to nper.
  * @param {*} nper The total number of payment periods in an annuity.
  * @param {*} pv The present value — the total amount that a series of future payments is worth now.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
 function PPMT(rate, per, nper, pv, fv, type) {
@@ -18119,27 +17588,6 @@ function PPMT(rate, per, nper, pv, fv, type) {
   return PMT(rate, nper, pv, fv, type) - IPMT(rate, per, nper, pv, fv, type)
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the price per $100 face value of a security that pays periodic interest.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} rate The security's annual coupon rate.
- * @param {*} yld The security's annual yield.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function PRICE() {
-  throw new Error('PRICE is not implemented')
-}
-
 /**
  * Returns the price per $100 face value of a discounted security.
  *
@@ -18149,7 +17597,7 @@ function PRICE() {
  * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
  * @param {*} discount The security's discount rate.
  * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} basis Optional. The type of day count basis to use.
+ * @param {*} [basis] Optional. The type of day count basis to use.
  * @returns
  */
 function PRICEDISC(settlement, maturity, discount, redemption, basis) {
@@ -18202,26 +17650,6 @@ function PRICEDISC(settlement, maturity, discount, redemption, basis) {
   return redemption - (discount * redemption * diff) / basisVal
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the price per $100 face value of a security that pays interest at maturity.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} issue The security's issue date, expressed as a serial date number.
- * @param {*} rate The security's interest rate at date of issue.
- * @param {*} yld The security's annual yield.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function PRICEMAT() {
-  throw new Error('PRICEMAT is not implemented')
-}
-
 /**
  * Returns the present value of an investment.
  *
@@ -18230,8 +17658,8 @@ function PRICEMAT() {
  * @param {*} rate The interest rate per period. For example, if you obtain an automobile loan at a 10 percent annual interest rate and make monthly payments, your interest rate per month is 10%/12, or 0.83%. You would enter 10%/12, or 0.83%, or 0.0083, into the formula as the rate.
  * @param {*} nper The total number of payment periods in an annuity. For example, if you get a four-year car loan and make monthly payments, your loan has 4*12 (or 48) periods. You would enter 48 into the formula for nper.
  * @param {*} pmt The payment made each period and cannot change over the life of the annuity. Typically, pmt includes principal and interest but no other fees or taxes. For example, the monthly payments on a $10,000, four-year car loan at 12 percent are $263.33. You would enter -263.33 into the formula as the pmt. If pmt is omitted, you must include the fv argument.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0). For example, if you want to save $50,000 to pay for a special project in 18 years, then $50,000 is the future value. You could then make a conservative guess at an interest rate and determine how much you must save each month. If fv is omitted, you must include the pmt argument.
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0). For example, if you want to save $50,000 to pay for a special project in 18 years, then $50,000 is the future value. You could then make a conservative guess at an interest rate and determine how much you must save each month. If fv is omitted, you must include the pmt argument.
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due.
  * @returns
  */
 function PV(rate, per, pmt, fv, type) {
@@ -18262,15 +17690,15 @@ function PV(rate, per, pmt, fv, type) {
  * @param {*} nper The total number of payment periods in an annuity.
  * @param {*} pmt The payment made each period and cannot change over the life of the annuity. Typically, pmt includes principal and interest but no other fees or taxes. If pmt is omitted, you must include the fv argument.
  * @param {*} pv The present value — the total amount that a series of future payments is worth now.
- * @param {*} fv Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0). If fv is omitted, you must include the pmt argument.
- * @param {*} type Optional. The number 0 or 1 and indicates when payments are due.
- * @param {*} guess Optional. Your guess for what the rate will be. If you omit guess, it is assumed to be 10 percent. If RATE does not converge, try different values for guess. RATE usually converges if guess is between 0 and 1.
+ * @param {*} [fv] Optional. The future value, or a cash balance you want to attain after the last payment is made. If fv is omitted, it is assumed to be 0 (the future value of a loan, for example, is 0). If fv is omitted, you must include the pmt argument.
+ * @param {*} [type] Optional. The number 0 or 1 and indicates when payments are due.
+ * @param {*} [guess] Optional. Your guess for what the rate will be. If you omit guess, it is assumed to be 10 percent. If RATE does not converge, try different values for guess. RATE usually converges if guess is between 0 and 1.
  - If you omit guess, it is assumed to be 10 percent.
  - If RATE does not converge, try different values for guess. RATE usually converges if guess is between 0 and 1.
  * @returns
  */
 function RATE(nper, pmt, pv, fv, type, guess) {
-  guess = guess === undefined ? 0.01 : guess;
+  guess = guess === undefined ? 0.1 : guess;
   fv = fv === undefined ? 0 : fv;
   type = type === undefined ? 0 : type;
 
@@ -18286,7 +17714,7 @@ function RATE(nper, pmt, pv, fv, type, guess) {
   }
 
   const epsMax = 1e-10;
-  const iterMax = 20;
+  const iterMax = 100;
   let rate = guess;
 
   type = type ? 1 : 0;
@@ -18323,25 +17751,6 @@ function RATE(nper, pmt, pv, fv, type, guess) {
   }
 
   return rate
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the amount received at maturity for a fully invested security.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} investment The amount invested in the security.
- * @param {*} discount The security's discount rate.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function RECEIVED() {
-  throw new Error('RECEIVED is not implemented')
 }
 
 /**
@@ -18553,29 +17962,6 @@ function TBILLYIELD(settlement, maturity, pr) {
   return ((100 - pr) * 360) / (pr * DAYS360(settlement, maturity, false))
 }
 
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the depreciation of an asset for a specified or partial period by using a declining balance method.
- *
- * Category: Financial
- *
- * @param {*} cost The initial cost of the asset.
- * @param {*} salvage The value at the end of the depreciation (sometimes called the salvage value of the asset). This value can be 0.
- * @param {*} life The number of periods over which the asset is depreciated (sometimes called the useful life of the asset).
- * @param {*} start_period The starting period for which you want to calculate the depreciation. Start_period must use the same units as life.
- * @param {*} end_period The ending period for which you want to calculate the depreciation. End_period must use the same units as life.
- * @param {*} factor Optional. The rate at which the balance declines. If factor is omitted, it is assumed to be 2 (the double-declining balance method). Change factor if you do not want to use the double-declining balance method. For a description of the double-declining balance method, see DDB.
- * @param {*} no_switch Optional. A logical value specifying whether to switch to straight-line depreciation when depreciation is greater than the declining balance calculation.
- - If no_switch is TRUE, Microsoft Excel does not switch to straight-line depreciation even when the depreciation is greater than the declining balance calculation.
- - If no_switch is FALSE or omitted, Excel switches to straight-line depreciation when depreciation is greater than the declining balance calculation.
- * @returns
- */
-function VDB() {
-  throw new Error('VDB is not implemented')
-}
-
 /**
  * Returns the internal rate of return for a schedule of cash flows that is not necessarily periodic.
  *
@@ -18583,7 +17969,7 @@ function VDB() {
  *
  * @param {*} values A series of cash flows that corresponds to a schedule of payments in dates. The first payment is optional and corresponds to a cost or payment that occurs at the beginning of the investment. If the first value is a cost or payment, it must be a negative value. All succeeding payments are discounted based on a 365-day year. The series of values must contain at least one positive and one negative value.
  * @param {*} dates A schedule of payment dates that corresponds to the cash flow payments. Dates may occur in any order. Dates should be entered by using the DATE function, or as results of other formulas or functions. For example, use DATE(2008,5,23) for the 23rd day of May, 2008. Problems can occur if dates are entered as text. .
- * @param {*} guess Optional. A number that you guess is close to the result of XIRR.
+ * @param {*} [guess] Optional. A number that you guess is close to the result of XIRR.
  * @returns
  */
 function XIRR(values, dates, guess) {
@@ -18689,66 +18075,6 @@ function XNPV(rate, values, dates) {
   }
 
   return result
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the yield on a security that pays periodic interest.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} rate The security's annual coupon rate.
- * @param {*} pr The security's price per $100 face value.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} frequency The number of coupon payments per year. For annual payments, frequency = 1; for semiannual, frequency = 2; for quarterly, frequency = 4.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function YIELD() {
-  throw new Error('YIELD is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the annual yield for a discounted security; for example, a Treasury bill.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} pr The security's price per $100 face value.
- * @param {*} redemption The security's redemption value per $100 face value.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function YIELDDISC() {
-  throw new Error('YIELDDISC is not implemented')
-}
-
-// TODO
-/**
- * -- Not implemented --
- *
- * Returns the annual yield of a security that pays interest at maturity.
- *
- * Category: Financial
- *
- * @param {*} settlement The security's settlement date. The security settlement date is the date after the issue date when the security is traded to the buyer.
- * @param {*} maturity The security's maturity date. The maturity date is the date when the security expires.
- * @param {*} issue The security's issue date, expressed as a serial date number.
- * @param {*} rate The security's interest rate at date of issue.
- * @param {*} pr The security's price per $100 face value.
- * @param {*} basis Optional. The type of day count basis to use.
- * @returns
- */
-function YIELDMAT() {
-  throw new Error('YIELDMAT is not implemented')
 }
 
 /**
@@ -19007,445 +18333,699 @@ function SWITCH() {
   return result
 }
 
-const utils = { errors, symbols };
+const utils = { errors, symbols, date };
+
+exports.ABS = ABS;
+exports.ACCRINT = ACCRINT;
+exports.ACOS = ACOS;
+exports.ACOSH = ACOSH;
+exports.ACOT = ACOT;
+exports.ACOTH = ACOTH;
+exports.AGGREGATE = AGGREGATE;
+exports.AND = AND;
+exports.ARABIC = ARABIC;
+exports.ASIN = ASIN;
+exports.ASINH = ASINH;
+exports.ATAN = ATAN;
+exports.ATAN2 = ATAN2;
+exports.ATANH = ATANH;
+exports.AVEDEV = AVEDEV;
+exports.AVERAGE = AVERAGE;
+exports.AVERAGEA = AVERAGEA;
+exports.AVERAGEIF = AVERAGEIF;
+exports.AVERAGEIFS = AVERAGEIFS;
+exports.BASE = BASE;
+exports.BESSELI = BESSELI;
+exports.BESSELJ = BESSELJ;
+exports.BESSELK = BESSELK;
+exports.BESSELY = BESSELY;
+exports.BETA = BETA;
+exports.BETADIST = BETADIST;
+exports.BETAINV = BETAINV;
+exports.BIN2DEC = BIN2DEC;
+exports.BIN2HEX = BIN2HEX;
+exports.BIN2OCT = BIN2OCT;
+exports.BINOM = BINOM;
+exports.BINOMDIST = BINOMDIST;
+exports.BITAND = BITAND;
+exports.BITLSHIFT = BITLSHIFT;
+exports.BITOR = BITOR;
+exports.BITRSHIFT = BITRSHIFT;
+exports.BITXOR = BITXOR;
+exports.CEILING = CEILING;
+exports.CEILINGMATH = CEILINGMATH;
+exports.CEILINGPRECISE = CEILINGPRECISE;
+exports.CHAR = CHAR;
+exports.CHIDIST = CHIDIST;
+exports.CHIDISTRT = CHIDISTRT;
+exports.CHIINV = CHIINV;
+exports.CHIINVRT = CHIINVRT;
+exports.CHISQ = CHISQ;
+exports.CHITEST = CHITEST;
+exports.CHOOSE = CHOOSE;
+exports.CLEAN = CLEAN;
+exports.CODE = CODE;
+exports.COLUMN = COLUMN;
+exports.COLUMNS = COLUMNS;
+exports.COMBIN = COMBIN;
+exports.COMBINA = COMBINA;
+exports.COMPLEX = COMPLEX;
+exports.CONCAT = CONCAT;
+exports.CONCATENATE = CONCATENATE;
+exports.CONFIDENCE = CONFIDENCE;
+exports.CONVERT = CONVERT;
+exports.CORREL = CORREL;
+exports.COS = COS;
+exports.COSH = COSH;
+exports.COT = COT;
+exports.COTH = COTH;
+exports.COUNT = COUNT;
+exports.COUNTA = COUNTA;
+exports.COUNTBLANK = COUNTBLANK;
+exports.COUNTIF = COUNTIF;
+exports.COUNTIFS = COUNTIFS;
+exports.COUPDAYS = COUPDAYS;
+exports.COVAR = COVAR;
+exports.COVARIANCE = COVARIANCE;
+exports.COVARIANCEP = COVARIANCEP;
+exports.COVARIANCES = COVARIANCES;
+exports.CRITBINOM = CRITBINOM;
+exports.CSC = CSC;
+exports.CSCH = CSCH;
+exports.CUMIPMT = CUMIPMT;
+exports.CUMPRINC = CUMPRINC;
+exports.DATE = DATE;
+exports.DATEDIF = DATEDIF;
+exports.DATEVALUE = DATEVALUE;
+exports.DAVERAGE = DAVERAGE;
+exports.DAY = DAY;
+exports.DAYS = DAYS;
+exports.DAYS360 = DAYS360;
+exports.DB = DB;
+exports.DCOUNT = DCOUNT;
+exports.DCOUNTA = DCOUNTA;
+exports.DDB = DDB;
+exports.DEC2BIN = DEC2BIN;
+exports.DEC2HEX = DEC2HEX;
+exports.DEC2OCT = DEC2OCT;
+exports.DECIMAL = DECIMAL;
+exports.DEGREES = DEGREES;
+exports.DELTA = DELTA;
+exports.DEVSQ = DEVSQ;
+exports.DGET = DGET;
+exports.DISC = DISC;
+exports.DMAX = DMAX;
+exports.DMIN = DMIN;
+exports.DOLLAR = DOLLAR;
+exports.DOLLARDE = DOLLARDE;
+exports.DOLLARFR = DOLLARFR;
+exports.DPRODUCT = DPRODUCT;
+exports.DSTDEV = DSTDEV;
+exports.DSTDEVP = DSTDEVP;
+exports.DSUM = DSUM;
+exports.DVAR = DVAR;
+exports.DVARP = DVARP;
+exports.EDATE = EDATE;
+exports.EFFECT = EFFECT;
+exports.EOMONTH = EOMONTH;
+exports.ERF = ERF;
+exports.ERFC = ERFC;
+exports.ERFCPRECISE = ERFCPRECISE;
+exports.ERFPRECISE = ERFPRECISE;
+exports.ERROR = ERROR;
+exports.EVEN = EVEN;
+exports.EXACT = EXACT;
+exports.EXP = EXP;
+exports.EXPON = EXPON;
+exports.EXPONDIST = EXPONDIST;
+exports.F = F;
+exports.FACT = FACT;
+exports.FACTDOUBLE = FACTDOUBLE;
+exports.FALSE = FALSE;
+exports.FDIST = FDIST;
+exports.FDISTRT = FDISTRT;
+exports.FIND = FIND;
+exports.FINV = FINV;
+exports.FINVRT = FINVRT;
+exports.FISHER = FISHER;
+exports.FISHERINV = FISHERINV;
+exports.FIXED = FIXED;
+exports.FLOOR = FLOOR;
+exports.FLOORMATH = FLOORMATH;
+exports.FLOORPRECISE = FLOORPRECISE;
+exports.FORECAST = FORECAST;
+exports.FREQUENCY = FREQUENCY;
+exports.FTEST = FTEST;
+exports.FV = FV;
+exports.FVSCHEDULE = FVSCHEDULE;
+exports.GAMMA = GAMMA;
+exports.GAMMADIST = GAMMADIST;
+exports.GAMMAINV = GAMMAINV;
+exports.GAMMALN = GAMMALN;
+exports.GAMMALNPRECISE = GAMMALNPRECISE;
+exports.GAUSS = GAUSS;
+exports.GCD = GCD;
+exports.GEOMEAN = GEOMEAN;
+exports.GESTEP = GESTEP;
+exports.GROWTH = GROWTH;
+exports.HARMEAN = HARMEAN;
+exports.HEX2BIN = HEX2BIN;
+exports.HEX2DEC = HEX2DEC;
+exports.HEX2OCT = HEX2OCT;
+exports.HLOOKUP = HLOOKUP;
+exports.HOUR = HOUR;
+exports.HYPGEOM = HYPGEOM;
+exports.HYPGEOMDIST = HYPGEOMDIST;
+exports.IF = IF;
+exports.IFERROR = IFERROR;
+exports.IFNA = IFNA;
+exports.IFS = IFS;
+exports.IMABS = IMABS;
+exports.IMAGINARY = IMAGINARY;
+exports.IMARGUMENT = IMARGUMENT;
+exports.IMCONJUGATE = IMCONJUGATE;
+exports.IMCOS = IMCOS;
+exports.IMCOSH = IMCOSH;
+exports.IMCOT = IMCOT;
+exports.IMCSC = IMCSC;
+exports.IMCSCH = IMCSCH;
+exports.IMDIV = IMDIV;
+exports.IMEXP = IMEXP;
+exports.IMLN = IMLN;
+exports.IMLOG10 = IMLOG10;
+exports.IMLOG2 = IMLOG2;
+exports.IMPOWER = IMPOWER;
+exports.IMPRODUCT = IMPRODUCT;
+exports.IMREAL = IMREAL;
+exports.IMSEC = IMSEC;
+exports.IMSECH = IMSECH;
+exports.IMSIN = IMSIN;
+exports.IMSINH = IMSINH;
+exports.IMSQRT = IMSQRT;
+exports.IMSUB = IMSUB;
+exports.IMSUM = IMSUM;
+exports.IMTAN = IMTAN;
+exports.INDEX = INDEX;
+exports.INT = INT;
+exports.INTERCEPT = INTERCEPT;
+exports.IPMT = IPMT;
+exports.IRR = IRR;
+exports.ISBLANK = ISBLANK;
+exports.ISERR = ISERR;
+exports.ISERROR = ISERROR;
+exports.ISEVEN = ISEVEN;
+exports.ISLOGICAL = ISLOGICAL;
+exports.ISNA = ISNA;
+exports.ISNONTEXT = ISNONTEXT;
+exports.ISNUMBER = ISNUMBER;
+exports.ISO = ISO;
+exports.ISODD = ISODD;
+exports.ISOWEEKNUM = ISOWEEKNUM;
+exports.ISPMT = ISPMT;
+exports.ISTEXT = ISTEXT;
+exports.KURT = KURT;
+exports.LARGE = LARGE;
+exports.LCM = LCM;
+exports.LEFT = LEFT;
+exports.LEN = LEN;
+exports.LINEST = LINEST;
+exports.LN = LN;
+exports.LOG = LOG;
+exports.LOG10 = LOG10;
+exports.LOGEST = LOGEST;
+exports.LOGINV = LOGINV;
+exports.LOGNORM = LOGNORM;
+exports.LOGNORMDIST = LOGNORMDIST;
+exports.LOGNORMINV = LOGNORMINV;
+exports.LOOKUP = LOOKUP;
+exports.LOWER = LOWER;
+exports.MATCH = MATCH;
+exports.MAX = MAX;
+exports.MAXA = MAXA;
+exports.MAXIFS = MAXIFS;
+exports.MEDIAN = MEDIAN;
+exports.MID = MID;
+exports.MIN = MIN;
+exports.MINA = MINA;
+exports.MINIFS = MINIFS;
+exports.MINUTE = MINUTE;
+exports.MIRR = MIRR;
+exports.MMULT = MMULT;
+exports.MOD = MOD;
+exports.MODE = MODE;
+exports.MODEMULT = MODEMULT;
+exports.MODESNGL = MODESNGL;
+exports.MONTH = MONTH;
+exports.MROUND = MROUND;
+exports.MULTINOMIAL = MULTINOMIAL;
+exports.MUNIT = MUNIT;
+exports.N = N;
+exports.NA = NA;
+exports.NEGBINOM = NEGBINOM;
+exports.NEGBINOMDIST = NEGBINOMDIST;
+exports.NETWORKDAYS = NETWORKDAYS;
+exports.NETWORKDAYSINTL = NETWORKDAYSINTL;
+exports.NOMINAL = NOMINAL;
+exports.NORM = NORM;
+exports.NORMDIST = NORMDIST;
+exports.NORMINV = NORMINV;
+exports.NORMSDIST = NORMSDIST;
+exports.NORMSINV = NORMSINV;
+exports.NOT = NOT;
+exports.NOW = NOW;
+exports.NPER = NPER;
+exports.NPV = NPV;
+exports.NUMBERVALUE = NUMBERVALUE;
+exports.OCT2BIN = OCT2BIN;
+exports.OCT2DEC = OCT2DEC;
+exports.OCT2HEX = OCT2HEX;
+exports.ODD = ODD;
+exports.OR = OR;
+exports.PDURATION = PDURATION;
+exports.PEARSON = PEARSON;
+exports.PERCENTILE = PERCENTILE;
+exports.PERCENTILEEXC = PERCENTILEEXC;
+exports.PERCENTILEINC = PERCENTILEINC;
+exports.PERCENTRANK = PERCENTRANK;
+exports.PERCENTRANKEXC = PERCENTRANKEXC;
+exports.PERCENTRANKINC = PERCENTRANKINC;
+exports.PERMUT = PERMUT;
+exports.PERMUTATIONA = PERMUTATIONA;
+exports.PHI = PHI;
+exports.PI = PI;
+exports.PMT = PMT;
+exports.POISSON = POISSON;
+exports.POISSONDIST = POISSONDIST;
+exports.POWER = POWER;
+exports.PPMT = PPMT;
+exports.PRICEDISC = PRICEDISC;
+exports.PROB = PROB;
+exports.PRODUCT = PRODUCT;
+exports.PROPER = PROPER;
+exports.PV = PV;
+exports.QUARTILE = QUARTILE;
+exports.QUARTILEEXC = QUARTILEEXC;
+exports.QUARTILEINC = QUARTILEINC;
+exports.QUOTIENT = QUOTIENT;
+exports.RADIANS = RADIANS;
+exports.RAND = RAND;
+exports.RANDBETWEEN = RANDBETWEEN;
+exports.RANK = RANK;
+exports.RANKAVG = RANKAVG;
+exports.RANKEQ = RANKEQ;
+exports.RATE = RATE;
+exports.REPLACE = REPLACE;
+exports.REPT = REPT;
+exports.RIGHT = RIGHT;
+exports.ROMAN = ROMAN;
+exports.ROUND = ROUND;
+exports.ROUNDDOWN = ROUNDDOWN;
+exports.ROUNDUP = ROUNDUP;
+exports.ROW = ROW;
+exports.ROWS = ROWS;
+exports.RRI = RRI;
+exports.RSQ = RSQ;
+exports.SEARCH = SEARCH;
+exports.SEC = SEC;
+exports.SECH = SECH;
+exports.SECOND = SECOND;
+exports.SERIESSUM = SERIESSUM;
+exports.SIGN = SIGN;
+exports.SIN = SIN;
+exports.SINH = SINH;
+exports.SKEW = SKEW;
+exports.SKEWP = SKEWP;
+exports.SLN = SLN;
+exports.SLOPE = SLOPE;
+exports.SMALL = SMALL;
+exports.SORT = SORT;
+exports.SQRT = SQRT;
+exports.SQRTPI = SQRTPI;
+exports.STANDARDIZE = STANDARDIZE;
+exports.STDEV = STDEV;
+exports.STDEVA = STDEVA;
+exports.STDEVP = STDEVP;
+exports.STDEVPA = STDEVPA;
+exports.STDEVS = STDEVS;
+exports.STEYX = STEYX;
+exports.SUBSTITUTE = SUBSTITUTE;
+exports.SUBTOTAL = SUBTOTAL;
+exports.SUM = SUM;
+exports.SUMIF = SUMIF;
+exports.SUMIFS = SUMIFS;
+exports.SUMPRODUCT = SUMPRODUCT;
+exports.SUMSQ = SUMSQ;
+exports.SUMX2MY2 = SUMX2MY2;
+exports.SUMX2PY2 = SUMX2PY2;
+exports.SUMXMY2 = SUMXMY2;
+exports.SWITCH = SWITCH;
+exports.SYD = SYD;
+exports.T = T;
+exports.TAN = TAN;
+exports.TANH = TANH;
+exports.TBILLEQ = TBILLEQ;
+exports.TBILLPRICE = TBILLPRICE;
+exports.TBILLYIELD = TBILLYIELD;
+exports.TDIST = TDIST;
+exports.TDISTRT = TDISTRT;
+exports.TEXT = TEXT;
+exports.TEXTJOIN = TEXTJOIN;
+exports.TIME = TIME;
+exports.TIMEVALUE = TIMEVALUE;
+exports.TINV = TINV;
+exports.TODAY = TODAY;
+exports.TRANSPOSE = TRANSPOSE;
+exports.TREND = TREND;
+exports.TRIM = TRIM;
+exports.TRIMMEAN = TRIMMEAN;
+exports.TRUE = TRUE;
+exports.TRUNC = TRUNC;
+exports.TTEST = TTEST;
+exports.TYPE = TYPE;
+exports.UNICHAR = UNICHAR;
+exports.UNICODE = UNICODE;
+exports.UNIQUE = UNIQUE;
+exports.UPPER = UPPER;
+exports.VALUE = VALUE;
+exports.VAR = VAR;
+exports.VARA = VARA;
+exports.VARP = VARP;
+exports.VARPA = VARPA;
+exports.VARS = VARS;
+exports.VLOOKUP = VLOOKUP;
+exports.WEEKDAY = WEEKDAY;
+exports.WEEKNUM = WEEKNUM;
+exports.WEIBULL = WEIBULL;
+exports.WEIBULLDIST = WEIBULLDIST;
+exports.WORKDAY = WORKDAY;
+exports.WORKDAYINTL = WORKDAYINTL;
+exports.XIRR = XIRR;
+exports.XNPV = XNPV;
+exports.XOR = XOR;
+exports.YEAR = YEAR;
+exports.YEARFRAC = YEARFRAC;
+exports.Z = Z;
+exports.ZTEST = ZTEST;
+exports.utils = utils;
 
 
+/***/ }),
 
-;// CONCATENATED MODULE: ./src/formula.js
-/**
- * Jspreadsheet Extensions
- * Extension: Formula Basic
- * License: This is a free software MIT
- *
- * https://jspreadsheet.com
- */
+/***/ 809:
+/***/ (function(__unused_webpack_module, exports) {
 
+/* bessel.js (C) 2013-present SheetJS -- http://sheetjs.com */
+/* vim: set ts=2: */
+/*exported BESSEL */
+var BESSEL;
+(function (factory) {
+  /*jshint ignore:start */
+  if(typeof DO_NOT_EXPORT_BESSEL === 'undefined') {
+    if(true) {
+      factory(exports);
+    } else // removed by dead control flow
+{}
+  } else {
+    factory(BESSEL = {});
+  }
+  /*jshint ignore:end */
+}(function(BESSEL) {
+BESSEL.version = '1.0.2';
+var M = Math;
 
-
-const Formula = function (scope) {
-    // Based on sutoiku work (https://github.com/sutoiku)
-
-    function getValue(obj, path) {
-        const keys = path.split('.')
-        let current = obj
-
-        for (const key of keys) {
-            if (current === undefined || current === null) {
-                return undefined
-            }
-            current = current[key]
-        }
-
-        return current
-    }
-
-    for (let i = 0; i < Object.keys(esm_namespaceObject).length; i++) {
-        let method = Object.keys(esm_namespaceObject)[i]
-        let keys = []
-        let values
-        if (typeof esm_namespaceObject[method] == 'object') {
-            keys = Object.keys(esm_namespaceObject[method])
-            values = Object.values(esm_namespaceObject[method])
-            for (let a = 0; a < values.length; a++) {
-                if (typeof values[a] == 'object') {
-                    let subMethod = keys[a]
-                    if (esm_namespaceObject[method][subMethod]) {
-                        keys = [
-                            ...keys,
-                            ...Object.keys(esm_namespaceObject[method][subMethod]).map((a) => subMethod + '.' + a)
-                        ] // Line too heavy, need refactor
-                        keys.splice(keys.indexOf(subMethod), 1)
-                    }
-                }
-            }
-        }
-
-        if (keys.length < 1) {
-            scope[method] = esm_namespaceObject[method]
-        } else {
-            for (let j = 0; j < keys.length; j++) {
-                if (typeof getValue(esm_namespaceObject[method], keys[j]) == 'function') {
-                    scope[method] = getValue(esm_namespaceObject[method], keys[j])
-                }
-            }
-        }
-    }
-
-    /**
-     * Instance execution helpers
-     */
-    var x = null
-    var y = null
-    var instance = null
-
-    scope['TABLE'] = function () {
-        return instance
-    }
-    scope['COLUMN'] = scope['COL'] = function () {
-        if (instance.tracking) {
-            instance.tracking.push(F.getColumnNameFromCoords(parseInt(x), parseInt(y)))
-        }
-
-        return parseInt(x) + 1
-    }
-    scope['ROW'] = function () {
-        if (instance.tracking) {
-            instance.tracking.push(F.getColumnNameFromCoords(parseInt(x), parseInt(y)))
-        }
-
-        return parseInt(y) + 1
-    }
-    scope['CELL'] = function () {
-        return F.getColumnNameFromCoords(x, y)
-    }
-    scope['VALUE'] = function (col, row, processed) {
-        return instance.getValueFromCoords(parseInt(col) - 1, parseInt(row) - 1, processed)
-    }
-    scope['THISROWCELL'] = function (col) {
-        return instance.getValueFromCoords(parseInt(col) - 1, parseInt(y))
-    }
-
-    // Secure formula
-    var secureFormula = function (oldValue, runtime) {
-        var newValue = ''
-        var inside = 0
-
-        var special = ['=', '!', '>', '<']
-
-        for (var i = 0; i < oldValue.length; i++) {
-            if (oldValue[i] == '"') {
-                if (inside == 0) {
-                    inside = 1
-                } else {
-                    inside = 0
-                }
-            }
-
-            if (inside == 1) {
-                newValue += oldValue[i]
-            } else {
-                newValue += oldValue[i].toUpperCase()
-
-                if (runtime == true) {
-                    if (
-                        i > 0 &&
-                        oldValue[i] == '=' &&
-                        special.indexOf(oldValue[i - 1]) == -1 &&
-                        special.indexOf(oldValue[i + 1]) == -1
-                    ) {
-                        newValue += '='
-                    }
-                }
-            }
-        }
-
-        // Adapt to JS
-        newValue = newValue.replace(/\^/g, '**')
-        newValue = newValue.replace(/\<\>/g, '!=')
-        newValue = newValue.replace(/\&/g, '+')
-        newValue = newValue.replace(/\$/g, '')
-
-        return newValue
-    }
-
-    // Convert range tokens
-    var tokensUpdate = function (tokens, e) {
-        for (var index = 0; index < tokens.length; index++) {
-            var f = F.getTokensFromRange(tokens[index])
-            e = e.replace(tokens[index], '[' + f.join(',') + ']')
-        }
-        return e
-    }
-
-    var isNumeric = function (num) {
-        if (typeof (num) === 'string') {
-            num = num.trim();
-        }
-        return !isNaN(num) && num !== null && num !== '';
-    }
-
-    var F = function (expression, variables, i, j, obj) {
-        // Global helpers
-        instance = obj
-        x = i
-        y = j
-        // String
-        var s = ''
-        var parent = {}
-        if (variables) {
-            if (variables.size) {
-                tokens = null
-                variables.forEach(function (v, k) {
-                    // Replace ! per dot
-                    t = k.replace(/!/g, '.')
-                    // Exists parent
-                    if (t.indexOf('.') !== -1) {
-                        t = t.split('.')
-                        parent[t[0]] = true
-                    }
-                })
-                t = Object.keys(parent)
-                for (let i = 0; i < t.length; i++) {
-                    s += 'var ' + t[i] + ' = {};'
-                }
-
-                variables.forEach(function (v, k) {
-                    // Replace ! per dot
-                    t = k.replace(/!/g, '.')
-                    if (v !== null && !isNumeric(v)) {
-                        tokens = v.match(/(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g)
-                        if (tokens && tokens.length) {
-                            v = updateRanges(tokens, v)
-                        }
-                    }
-
-                    if (t.indexOf('.') > 0) {
-                        s += t + ' = ' + variables.get(k) + ';\n'
-                    } else {
-                        s += 'var ' + t + ' = ' + v + ';\n'
-                    }
-                })
-            } else {
-                var keys = Object.keys(variables)
-                if (keys.length) {
-                    var parent = {}
-                    for (var i = 0; i < keys.length; i++) {
-                        // Replace ! per dot
-                        t = keys[i].replace(/\!/g, '.')
-                        // Exists parent
-                        if (t.indexOf('.') > 0) {
-                            var t = t.split('.')
-                            parent[t[0]] = {}
-                        }
-                    }
-                    var t = Object.keys(parent)
-                    for (var i = 0; i < t.length; i++) {
-                        s += 'var ' + t[i] + ' = {};'
-                    }
-
-                    for (var i = 0; i < keys.length; i++) {
-                        // Replace ! per dot
-                        var t = keys[i].replace(/\!/g, '.')
-
-                        // Update range
-                        if (variables[keys[i]] !== null && !isNumeric(variables[keys[i]])) {
-                            var tokens = variables[keys[i]].match(
-                                /(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g
-                            )
-                            if (tokens && tokens.length) {
-                                variables[keys[i]] = tokensUpdate(tokens, variables[keys[i]])
-                            }
-                        }
-
-                        if (t.indexOf('.') > 0) {
-                            s += t + " = " + variables[keys[i]] + ";\n"
-                        } else {
-                            s += "var " + t + " = " + variables[keys[i]] + ";\n"
-                        }
-                    }
-                }
-            }
-        }
-        // Remove $
-        expression = expression.replace(/\$/g, '')
-        // Replace ! per dot
-        expression = expression.replace(/\!/g, '.')
-        // Adapt to JS
-        expression = secureFormula(expression, true)
-        // Update range
-        var tokens = expression.match(/(('.*?'!)|(\w*!))?(\$?[A-Z]+\$?[0-9]*):(\$?[A-Z]+\$?[0-9]*)?/g)
-        if (tokens && tokens.length) {
-            expression = tokensUpdate(tokens, expression)
-        }
-        // Calculate
-        var result = new Function(s + "; return " + expression)()
-        if (result === null) {
-            result = 0
-        }
-
-        return result
-    }
-
-    /**
-     * Get letter based on a number
-     * @param {number} i
-     * @return {string}
-     */
-    var getColumnName = function (i) {
-        var letter = ''
-        if (i > 701) {
-            letter += String.fromCharCode(64 + parseInt(i / 676))
-            letter += String.fromCharCode(64 + parseInt((i % 676) / 26))
-        } else if (i > 25) {
-            letter += String.fromCharCode(64 + parseInt(i / 26))
-        }
-        letter += String.fromCharCode(65 + (i % 26))
-
-        return letter
-    }
-
-    /**
-     * Get column name from coords
-     */
-    F.getColumnNameFromCoords = function (x, y) {
-        return getColumnName(parseInt(x)) + (parseInt(y) + 1)
-    }
-
-    F.getCoordsFromColumnName = function (columnName) {
-        // Get the letters
-        var t = /^[a-zA-Z]+/.exec(columnName)
-
-        if (t) {
-            // Base 26 calculation
-            var code = 0
-            for (var i = 0; i < t[0].length; i++) {
-                code += parseInt(t[0].charCodeAt(i) - 64) * Math.pow(26, t[0].length - 1 - i)
-            }
-            code--
-            // Make sure jspreadsheet starts on zero
-            if (code < 0) {
-                code = 0
-            }
-
-            // Number
-            var number = parseInt(/[0-9]+$/.exec(columnName)) || null
-            if (number > 0) {
-                number--
-            }
-
-            return [code, number]
-        }
-    }
-
-    F.getRangeFromTokens = function (tokens) {
-        tokens = tokens.filter(function (v) {
-            return v != '#REF!'
-        })
-
-        var d = ''
-        var t = ''
-        for (var i = 0; i < tokens.length; i++) {
-            if (tokens[i].indexOf('.') >= 0) {
-                d = '.'
-            } else if (tokens[i].indexOf('!') >= 0) {
-                d = '!'
-            }
-            if (d) {
-                t = tokens[i].split(d)
-                tokens[i] = t[1]
-                t = t[0] + d
-            }
-        }
-
-        tokens.sort(function (a, b) {
-            var t1 = Helpers.getCoordsFromColumnName(a)
-            var t2 = Helpers.getCoordsFromColumnName(b)
-            if (t1[1] > t2[1]) {
-                return 1
-            } else if (t1[1] < t2[1]) {
-                return -1
-            } else {
-                if (t1[0] > t2[0]) {
-                    return 1
-                } else if (t1[0] < t2[0]) {
-                    return -1
-                } else {
-                    return 0
-                }
-            }
-        })
-
-        if (!tokens.length) {
-            return '#REF!'
-        } else {
-            return t + (tokens[0] + ':' + tokens[tokens.length - 1])
-        }
-    }
-
-    F.getTokensFromRange = function (range) {
-        if (range.indexOf('.') > 0) {
-            var t = range.split('.')
-            range = t[1]
-            t = t[0] + '.'
-        } else if (range.indexOf('!') > 0) {
-            var t = range.split('!')
-            range = t[1]
-            t = t[0] + '!'
-        } else {
-            var t = ''
-        }
-
-        var range = range.split(':')
-        var e1 = F.getCoordsFromColumnName(range[0])
-        var e2 = F.getCoordsFromColumnName(range[1])
-
-        if (e1[0] <= e2[0]) {
-            var x1 = e1[0]
-            var x2 = e2[0]
-        } else {
-            var x1 = e2[0]
-            var x2 = e1[0]
-        }
-
-        if (e1[1] === null && e2[1] == null) {
-            var y1 = null
-            var y2 = null
-
-            var k = Object.keys(vars)
-            for (var i = 0; i < k.length; i++) {
-                var tmp = F.getCoordsFromColumnName(k[i])
-                if (tmp[0] === e1[0]) {
-                    if (y1 === null || tmp[1] < y1) {
-                        y1 = tmp[1]
-                    }
-                }
-                if (tmp[0] === e2[0]) {
-                    if (y2 === null || tmp[1] > y2) {
-                        y2 = tmp[1]
-                    }
-                }
-            }
-        } else {
-            if (e1[1] <= e2[1]) {
-                var y1 = e1[1]
-                var y2 = e2[1]
-            } else {
-                var y1 = e2[1]
-                var y2 = e1[1]
-            }
-        }
-
-        var f = []
-        for (var j = y1; j <= y2; j++) {
-            var line = []
-            for (var i = x1; i <= x2; i++) {
-                line.push(t + F.getColumnNameFromCoords(i, j))
-            }
-            f.push(line)
-        }
-
-        return f
-    }
-
-    F.setFormula = function (o) {
-        var k = Object.keys(o)
-        for (var i = 0; i < k.length; i++) {
-            if (typeof o[k[i]] == 'function') {
-                scope[k[i]] = o[k[i]]
-            }
-        }
-    }
-
-    F.basic = true
-
-    return F
+function _horner(arr, v) { for(var i = 0, z = 0; i < arr.length; ++i) z = v * z + arr[i]; return z; }
+function _bessel_iter(x, n, f0, f1, sign) {
+  if(n === 0) return f0;
+  if(n === 1) return f1;
+  var tdx = 2 / x, f2 = f1;
+  for(var o = 1; o < n; ++o) {
+    f2 = f1 * o * tdx + sign * f0;
+    f0 = f1; f1 = f2;
+  }
+  return f2;
 }
+function _bessel_wrap(bessel0, bessel1, name, nonzero, sign) {
+  return function bessel(x,n) {
+    if(nonzero) {
+      if(x === 0) return (nonzero == 1 ? -Infinity : Infinity);
+      else if(x < 0) return NaN;
+    }
+    if(n === 0) return bessel0(x);
+    if(n === 1) return bessel1(x);
+    if(n < 0) return NaN;
+    n|=0;
+    var b0 = bessel0(x), b1 = bessel1(x);
+    return _bessel_iter(x, n, b0, b1, sign);
+  };
+}
+var besselj = (function() {
+  var W = 0.636619772; // 2 / Math.PI
 
-let formula = Formula(window)
-/* harmony default export */ var src_formula = (formula);
-}();
-__webpack_exports__ = __webpack_exports__["default"];
-/******/ 	return __webpack_exports__;
+  var b0_a1a = [57568490574.0, -13362590354.0, 651619640.7, -11214424.18, 77392.33017, -184.9052456].reverse();
+  var b0_a2a = [57568490411.0, 1029532985.0, 9494680.718, 59272.64853, 267.8532712, 1.0].reverse();
+  var b0_a1b = [1.0, -0.1098628627e-2, 0.2734510407e-4, -0.2073370639e-5, 0.2093887211e-6].reverse();
+  var b0_a2b = [-0.1562499995e-1, 0.1430488765e-3, -0.6911147651e-5, 0.7621095161e-6, -0.934935152e-7].reverse();
+
+  function bessel0(x) {
+    var a=0, a1=0, a2=0, y = x * x;
+    if(x < 8) {
+      a1 = _horner(b0_a1a, y);
+      a2 = _horner(b0_a2a, y);
+      a = a1 / a2;
+    } else {
+      var xx = x - 0.785398164;
+      y = 64 / y;
+      a1 = _horner(b0_a1b, y);
+      a2 = _horner(b0_a2b, y);
+      a = M.sqrt(W/x)*(M.cos(xx)*a1-M.sin(xx)*a2*8/x);
+    }
+    return a;
+  }
+
+  var b1_a1a = [72362614232.0, -7895059235.0, 242396853.1, -2972611.439, 15704.48260, -30.16036606].reverse();
+  var b1_a2a = [144725228442.0, 2300535178.0, 18583304.74, 99447.43394, 376.9991397, 1.0].reverse();
+  var b1_a1b = [1.0, 0.183105e-2, -0.3516396496e-4, 0.2457520174e-5, -0.240337019e-6].reverse();
+  var b1_a2b = [0.04687499995, -0.2002690873e-3, 0.8449199096e-5, -0.88228987e-6, 0.105787412e-6].reverse();
+
+  function bessel1(x) {
+    var a=0, a1=0, a2=0, y = x*x, xx = M.abs(x) - 2.356194491;
+    if(Math.abs(x)< 8) {
+      a1 = x*_horner(b1_a1a, y);
+      a2 = _horner(b1_a2a, y);
+      a = a1 / a2;
+    } else {
+      y = 64 / y;
+      a1=_horner(b1_a1b, y);
+      a2=_horner(b1_a2b, y);
+      a=M.sqrt(W/M.abs(x))*(M.cos(xx)*a1-M.sin(xx)*a2*8/M.abs(x));
+      if(x < 0) a = -a;
+    }
+    return a;
+  }
+
+  return function besselj(x, n) {
+    n = Math.round(n);
+    if(!isFinite(x)) return isNaN(x) ? x : 0;
+    if(n < 0) return ((n%2)?-1:1)*besselj(x, -n);
+    if(x < 0) return ((n%2)?-1:1)*besselj(-x, n);
+    if(n === 0) return bessel0(x);
+    if(n === 1) return bessel1(x);
+    if(x === 0) return 0;
+
+    var ret=0.0;
+    if(x > n) {
+      ret = _bessel_iter(x, n, bessel0(x), bessel1(x),-1);
+    } else {
+      var m=2*M.floor((n+M.floor(M.sqrt(40*n)))/2);
+      var jsum=false;
+      var bjp=0.0, sum=0.0;
+      var bj=1.0, bjm = 0.0;
+      var tox = 2 / x;
+      for (var j=m;j>0;j--) {
+        bjm=j*tox*bj-bjp;
+        bjp=bj;
+        bj=bjm;
+        if (M.abs(bj) > 1E10) {
+          bj *= 1E-10;
+          bjp *= 1E-10;
+          ret *= 1E-10;
+          sum *= 1E-10;
+        }
+        if (jsum) sum += bj;
+        jsum=!jsum;
+        if (j == n) ret=bjp;
+      }
+      sum=2.0*sum-bj;
+      ret /= sum;
+    }
+    return ret;
+  };
+})();
+var bessely = (function() {
+  var W = 0.636619772;
+
+  var b0_a1a = [-2957821389.0, 7062834065.0, -512359803.6, 10879881.29, -86327.92757, 228.4622733].reverse();
+  var b0_a2a = [40076544269.0, 745249964.8, 7189466.438, 47447.26470, 226.1030244, 1.0].reverse();
+  var b0_a1b = [1.0, -0.1098628627e-2, 0.2734510407e-4, -0.2073370639e-5, 0.2093887211e-6].reverse();
+  var b0_a2b = [-0.1562499995e-1, 0.1430488765e-3, -0.6911147651e-5, 0.7621095161e-6, -0.934945152e-7].reverse();
+
+  function bessel0(x) {
+    var a=0, a1=0, a2=0, y = x * x, xx = x - 0.785398164;
+    if(x < 8) {
+      a1 = _horner(b0_a1a, y);
+      a2 = _horner(b0_a2a, y);
+      a = a1/a2 + W * besselj(x,0) * M.log(x);
+    } else {
+      y = 64 / y;
+      a1 = _horner(b0_a1b, y);
+      a2 = _horner(b0_a2b, y);
+      a = M.sqrt(W/x)*(M.sin(xx)*a1+M.cos(xx)*a2*8/x);
+    }
+    return a;
+  }
+
+  var b1_a1a = [-0.4900604943e13, 0.1275274390e13, -0.5153438139e11, 0.7349264551e9, -0.4237922726e7, 0.8511937935e4].reverse();
+  var b1_a2a = [0.2499580570e14, 0.4244419664e12, 0.3733650367e10, 0.2245904002e8, 0.1020426050e6, 0.3549632885e3, 1].reverse();
+  var b1_a1b = [1.0, 0.183105e-2, -0.3516396496e-4, 0.2457520174e-5, -0.240337019e-6].reverse();
+  var b1_a2b = [0.04687499995, -0.2002690873e-3, 0.8449199096e-5, -0.88228987e-6, 0.105787412e-6].reverse();
+
+  function bessel1(x) {
+    var a=0, a1=0, a2=0, y = x*x, xx = x - 2.356194491;
+    if(x < 8) {
+      a1 = x*_horner(b1_a1a, y);
+      a2 = _horner(b1_a2a, y);
+      a = a1/a2 + W * (besselj(x,1) * M.log(x) - 1 / x);
+    } else {
+      y = 64 / y;
+      a1=_horner(b1_a1b, y);
+      a2=_horner(b1_a2b, y);
+      a=M.sqrt(W/x)*(M.sin(xx)*a1+M.cos(xx)*a2*8/x);
+    }
+    return a;
+  }
+
+  return _bessel_wrap(bessel0, bessel1, 'BESSELY', 1, -1);
+})();
+var besseli = (function() {
+  var b0_a = [1.0, 3.5156229, 3.0899424, 1.2067492, 0.2659732, 0.360768e-1, 0.45813e-2].reverse();
+  var b0_b = [0.39894228, 0.1328592e-1, 0.225319e-2, -0.157565e-2, 0.916281e-2, -0.2057706e-1, 0.2635537e-1, -0.1647633e-1, 0.392377e-2].reverse();
+
+  function bessel0(x) {
+    if(x <= 3.75) return _horner(b0_a, x*x/(3.75*3.75));
+    return M.exp(M.abs(x))/M.sqrt(M.abs(x))*_horner(b0_b, 3.75/M.abs(x));
+  }
+
+  var b1_a = [0.5, 0.87890594, 0.51498869, 0.15084934, 0.2658733e-1, 0.301532e-2, 0.32411e-3].reverse();
+  var b1_b = [0.39894228, -0.3988024e-1, -0.362018e-2, 0.163801e-2, -0.1031555e-1, 0.2282967e-1, -0.2895312e-1, 0.1787654e-1, -0.420059e-2].reverse();
+
+  function bessel1(x) {
+    if(x < 3.75) return x * _horner(b1_a, x*x/(3.75*3.75));
+    return (x < 0 ? -1 : 1) * M.exp(M.abs(x))/M.sqrt(M.abs(x))*_horner(b1_b, 3.75/M.abs(x));
+  }
+
+  return function besseli(x, n) {
+    n = Math.round(n);
+    if(n === 0) return bessel0(x);
+    if(n === 1) return bessel1(x);
+    if(n < 0) return NaN;
+    if(M.abs(x) === 0) return 0;
+    if(x == Infinity) return Infinity;
+
+    var ret = 0.0, j, tox = 2 / M.abs(x), bip = 0.0, bi=1.0, bim=0.0;
+    var m=2*M.round((n+M.round(M.sqrt(40*n)))/2);
+    for (j=m;j>0;j--) {
+      bim=j*tox*bi + bip;
+      bip=bi; bi=bim;
+      if (M.abs(bi) > 1E10) {
+        bi *= 1E-10;
+        bip *= 1E-10;
+        ret *= 1E-10;
+      }
+      if(j == n) ret = bip;
+    }
+    ret *= besseli(x, 0) / bi;
+    return x < 0 && (n%2) ? -ret : ret;
+  };
+
+})();
+
+var besselk = (function() {
+  var b0_a = [-0.57721566, 0.42278420, 0.23069756, 0.3488590e-1, 0.262698e-2, 0.10750e-3, 0.74e-5].reverse();
+  var b0_b = [1.25331414, -0.7832358e-1, 0.2189568e-1, -0.1062446e-1, 0.587872e-2, -0.251540e-2, 0.53208e-3].reverse();
+
+  function bessel0(x) {
+    if(x <= 2) return -M.log(x/2) * besseli(x,0) + _horner(b0_a, x*x/4);
+    return M.exp(-x) / M.sqrt(x) * _horner(b0_b, 2/x);
+  }
+
+  var b1_a = [1.0, 0.15443144, -0.67278579, -0.18156897, -0.1919402e-1, -0.110404e-2, -0.4686e-4].reverse();
+  var b1_b = [1.25331414, 0.23498619, -0.3655620e-1, 0.1504268e-1, -0.780353e-2, 0.325614e-2, -0.68245e-3].reverse();
+
+  function bessel1(x) {
+    if(x <= 2) return M.log(x/2) * besseli(x,1) + (1/x) * _horner(b1_a, x*x/4);
+    return M.exp(-x)/M.sqrt(x)*_horner(b1_b, 2/x);
+  }
+
+  return _bessel_wrap(bessel0, bessel1, 'BESSELK', 2, 1);
+})();
+BESSEL.besselj = besselj;
+BESSEL.bessely = bessely;
+BESSEL.besseli = besseli;
+BESSEL.besselk = besselk;
+}));
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/global */
+/******/ 	!function() {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	}();
+/******/ 	
+/************************************************************************/
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(66);
+/******/ 	Formula = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
-});
+
+    return Formula;
+})));
