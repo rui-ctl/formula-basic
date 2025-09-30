@@ -156,6 +156,29 @@ const formulajs = require('@formulajs/formulajs');
         }
 
         const F = function (expression, variables, i, j, obj) {
+
+            expression = function(expression) {
+                let rtn = "";
+                let in_quote = false;
+                let P = ["=", "!", ">", "<"];
+                for (let i = 0; i < expression.length; i++){
+                    if (expression[i] === '"') {
+                        in_quote = !in_quote;
+                    }
+                    if (in_quote) {
+                        rtn += expression[i];
+                    } else {
+                        rtn += expression[i].toUpperCase();
+                        i > 0 && expression[i] === "=" && P.indexOf(expression[i - 1]) === -1 && P.indexOf(expression[i + 1]) === -1 && (rtn += "=");
+                    }
+                }
+                rtn = rtn.replace(/\^/g, "**");
+                rtn = rtn.replace(/<>/g, "!=");
+                rtn = rtn.replace(/&/g, "+");
+                rtn = rtn.replace(/\$/g, "");
+                return rtn;
+            }(expression);
+
             let func,arg = new Set();
             if (!('funcCache' in this)) {
                 this.funcCache = new Map();
