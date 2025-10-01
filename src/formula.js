@@ -157,7 +157,39 @@ const formulajs = require('@formulajs/formulajs');
 
         const F = function (expression, variables, i, j, obj) {
 
-            expression = secureFormula(expression, true);
+            expression = function (oldValue) {
+                let newValue = '';
+                let inside = 0;
+                let special = ['=', '!', '>', '<'];
+
+                for (let i = 0; i < oldValue.length; i++) {
+                    if (oldValue[i] === '"') {
+                        if (inside === 0) {
+                            inside = 1
+                        } else {
+                            inside = 0
+                        }
+                    }
+
+                    if (inside === 1) {
+                        newValue += oldValue[i]
+                    } else {
+                        newValue += oldValue[i].toUpperCase()
+
+                        if (i > 0 && oldValue[i] === '=' && special.indexOf(oldValue[i - 1]) === -1 && special.indexOf(oldValue[i + 1]) === -1) {
+                            newValue += '='
+                        }
+                    }
+                }
+
+                // Adapt to JS
+                newValue = newValue.replace(/\^/g, '**')
+                newValue = newValue.replace(/<>/g, '!=')
+                newValue = newValue.replace(/&/g, '+')
+                newValue = newValue.replace(/\$/g, '')
+
+                return newValue
+            }(expression);
 
             let func,arg = new Set();
             if (!('funcCache' in this)) {
